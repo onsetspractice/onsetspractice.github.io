@@ -1260,7 +1260,7 @@ function submitInput() {
                 };
         
                 if (puzzleData.variationsMap.get('wild')) {
-                    input = input.replaceAll(puzzleData.variationsMap.get('wild'), currWild)
+                    input = input.replaceAll(puzzleData.variationsMap.get('wild'), translateName(currWild))
                 }
                 let inputScore = altCalcScore(input)
                 console.log(inputScore)
