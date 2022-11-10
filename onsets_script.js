@@ -1246,8 +1246,8 @@ function submitInput() {
                 let requiredValues = requiredContainer.dataset.values
                 let resourcesValues = requiredContainer.dataset.values.concat(resourcesContainer.dataset.values)
                 if (puzzleData.variationsMap.get('wild')) {
-                    requiredValues = requiredValues.replaceAll(puzzleData.variationsMap.get('wild'), currWild)
-                    resourcesValues = resourcesValues.replaceAll(puzzleData.variationsMap.get('wild'), currWild)
+                    requiredValues = requiredValues.replaceAll(puzzleData.variationsMap.get('wild'), translateName(currWild))
+                    resourcesValues = resourcesValues.replaceAll(puzzleData.variationsMap.get('wild'), translateName(currWild))
                 }
                 let requiredScore = altCalcScore(requiredValues)
                 let resourcesScore = altCalcScore(resourcesValues)
