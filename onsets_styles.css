@@ -2,18 +2,9 @@
     box-sizing: border-box;
 }
 
-#equations-link {
-    z-index: 5;
-    position: absolute;
-    top: 50px;
-    opacity: 0;
-}
-#equations-link:hover {
-    opacity: 1;
-}
-html {
+/* html {
     scroll-behavior: smooth;
-}
+} */
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: whitesmoke;
@@ -230,7 +221,7 @@ header h1 {
     background-color: transparent;
     color: #808080;
     border: none;
-    padding: 6px 8px;
+    padding: 4px 6px;
 }
 #settings-nodes-container .settings-checkbox {
     border-top: none;
@@ -496,6 +487,7 @@ header h1 {
 
 .restraint-container {
     display: flex;
+    position: relative;
     width: 100%;
     height: 100%;
     border-radius: 2px;
@@ -608,9 +600,9 @@ header h1 {
     transition-duration: 0s;
 }
 
-#restriction-container:active, #solution-container:active {
+/* #restriction-container:active, #solution-container:active {
     background-color: rgb(67, 16, 32);
-}
+} */
 
 #restriction-bar, #solution-bar {
     position: relative;
@@ -659,7 +651,7 @@ header h1 {
     position: absolute;
     width: 154px;
     height: 28px;
-    border-radius: 6px;
+    border-radius: 8px;
     background-color: rgb(71, 17, 34);
     display: flex;
     justify-content: space-between;
@@ -671,8 +663,8 @@ header h1 {
     color: white;
     font-weight: 550;
     font-size: 13px;
-    line-height: 28px;
-    height: 28px;
+    line-height: 26px;
+    height: 26px;
     width: 76px;
     text-align: center;
     z-index: 2;
@@ -683,39 +675,47 @@ header h1 {
     height: 28px;
     width: 76px;
     left: 0;
-    border-radius: 6px;
+    border-radius: 8px;
     background-color: rgb(62, 15, 30);
-    transition: ease 0.1s left;
+    transition: cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.14s left;
 }
 
 #solution-form-toggle-div.move {
     left: calc(100% - 74px);
 }
 
+.restraint-container #solution-form-container {
+    bottom: 6px;
+    right: 12px;
+    background-color: rgb(205, 185, 30);
+}
+.restraint-container #solution-form-toggle-div {
+    background-color: rgb(192, 173, 28);
+}
+
 #goal-view-container {
     display: flex;
+    width: 174px;
+    height: 180px;
     flex-wrap: wrap;
-    width: 100%;
-    flex-direction: row;
+    align-self: center;
 }
 #goal-container {
     border-radius: 5px;
     align-self: flex-end;
-    /* height: 54px; */
     width: 100%;
     position: relative;
-    bottom: 6px;
-    transition: ease 0.08s;
+    bottom: 4px;
+    /* transition: ease 0.08s; */
     display: flex;
     justify-content: center;
     align-items: center;
-    /* flex-wrap: wrap; */
     flex-direction: column;
+    padding-bottom: 2px;
+    /* flex-wrap: wrap; */
 }
-#goal-view-container.three-rows {
-    align-self: flex-end;
-    position: relative;
-    bottom: 20px
+#goal-view-container.three-rows #goal-container {
+    bottom: 10px;
 }
 
 .goal-row {
@@ -760,6 +760,12 @@ header h1 {
     height: 6px;
     display: flex;
     justify-content: center;
+    /* align-self: flex-end;
+    bottom: 25px; */
+}
+#goal-view-container.three-rows #goal-bar {
+    align-self: flex-end;
+    bottom: 25px;
 }
 
 #bottom-puzzle-container {
@@ -811,6 +817,8 @@ header h1 {
     margin: 5px;
     justify-content: center;
     align-items: center;
+    height: 116px;
+    width: 78px;
     /* perspective: 900px; */
 }
 
@@ -845,8 +853,14 @@ header h1 {
     width: 75px;
     box-shadow: none;
     border-radius: 8px;
-    /* margin: 1.5px */
     /* display: none; */
+}
+
+@media (max-resolution: 100dpi) {
+    .double .card-content-front {
+        height: 112px;
+        width: 74px;
+    }
 }
 
 .double .card-border {
@@ -1182,11 +1196,16 @@ td {
     background-color: whitesmoke;
     position: fixed;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
     height: 87%;
+    
     width: 90%;
     max-width: 1200px;
+    transform: translateX(-50%);
+    left: 50%;
+    
+    /* left: 100px;
+    width: 900px; */
+
     box-shadow: 0 0 5px rgb(0 0 0 / 40%);
     border-radius: 10px 10px 0 0;
     translate: 0 100%;
@@ -1257,13 +1276,14 @@ td {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
     height: 30px;
     width: 184px;
     background-color:rgb(235, 235, 235);
     margin: 15px;
 }
 .answer-left-toggle, .answer-right-toggle {
+    font-size: 14px;
     height: 30px;
     line-height: 30px;
     text-align: center;
@@ -1276,16 +1296,20 @@ td {
     height: 30px;
     width: 90px;
     left: 0;
-    border-radius: 6px;
+    border-radius: 8px;
     background-color: rgb(220, 220, 220);
-    transition: ease 0.1s left;
+    transition: cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.14s left;
 }
 .answer-toggle-div.move {left: calc(100% - 90px);}
 
 #answer-content p {
     font-size: 1.17em;
-    /* margin: 0; */
-    /* color: white; */
+}
+
+#evaluation-paragraph {
+    color: rgb(116, 116, 116);
+    font-size: 14px !important;
+    margin: 6px 0px 18px;
 }
 
 .answer-solution-container {
