@@ -1,28 +1,24 @@
 let setTimer = new Date()
 
+// Start of functions
 function getVariation(variation) {
     console.log()
     return puzzleData.variations[puzzleData.variations.findIndex(val => Object.keys(val)[0] === variation)][variation]
 };
-
 function test() {
     let stopTimer = new Date(); console.log((stopTimer.getTime() - setTimer.getTime())/1000 + " SECONDS");
 };
-
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max + 1 - min)) + min;
 };
-
 function deleteFirstArrItem(array, item) {
     if (!array.includes(item)) return array;
     let index = array.indexOf(item);
     return array.slice(0, index).concat(array.slice(index + 1));
 };
-
 function filterDuplicates(arr) {
     return [...new Set(arr)]
 };
-
 function randomSort(input) {
     let arr = [...input]
     for (let i = arr.length -1; i > 0; i--) {
@@ -33,7 +29,6 @@ function randomSort(input) {
     }
     return arr;
 };
-
 function calcScore(inputArr, type = 1) {
     let score = [0, 0, 0, 0, 0, false, false, false]
     if (type === 2) {
@@ -71,7 +66,6 @@ function calcScore(inputArr, type = 1) {
     };
     return score;
 };
-
 function translateName(input) {
     switch (input) {
         case "B": return "blue";
@@ -95,7 +89,13 @@ function translateName(input) {
         case "universe": return "V";
         case "empty-set": return "Ʌ";
     }
-}
+};
+function addColorChild(card, color) {
+    const newColor = document.createElement('div')
+    newColor.classList.add(color)
+    card.append(newColor)
+};
+// End of functions
 
 let puzzleParamaters = 
 {
@@ -205,7 +205,7 @@ puzzleParamaters = {
 function newPuzzle() {
     console.group("NEW PUZZLE")
 
-    // RESETTING CONTAINERS
+    // Reset Containers
     inputValues.flatArray = {
         "setNameArr1": [],
         "setNameArr2": [],
@@ -249,21 +249,33 @@ function newPuzzle() {
     for (let cell of map.querySelectorAll("td")) {
         cell.classList.remove('whitebg')
     }
+    for (let x of mapArr) {
+        x.classList.remove('strike-through')
+    }
+    for (let key of keyboardContainer.querySelectorAll('.wild-cube')) {
+        key.classList.remove('wild-cube')
+    }
+
     goalContainer.innerHTML = ""
     goalContainer.parentElement.classList.remove('three-rows')
-
-    for (let x of mapArr) x.classList.remove('strike-through')
-    for (let key of keyboardContainer.querySelectorAll('.wild-cube')) key.classList.remove('wild-cube')
 
     changeRows(restrictionContainer, inputValues.wrapValue.restrictionArr2)
     changeRows(solutionContainer, inputValues.wrapValue.setNameArr2, true)
 
-    // GEN NEW PUZZLE
-
+    // Generate New Puzzle
     params = Object.values(puzzleParamaters)
     console.log(params)
 
+    console.log(workers)
+    if (workers.mainWorker) {
+        workers.mainWorker.terminate()
+    }
+    if (workers.queueWorker) {
+        workers.queueWorker.terminate()
+    }
+
     const mainPuzzleWorker = new Worker('onsets_worker.js');
+    workers.mainWorker = mainPuzzleWorker;
 
     if (queuedPuzzleData) {
         mainPuzzleWorker.postMessage([
@@ -291,8 +303,6 @@ function newPuzzle() {
         }
         
         // Set Wild Cube
-        console.log(puzzleData.variationsMap.get('wild'))
-
         if (puzzleData.variationsMap.get('wild')) {
             inputValues.wildCube.solution1 = translateName(puzzleData.variationsMap.get('wild'))
             inputValues.wildCube.solution2 = translateName(puzzleData.variationsMap.get('wild'))
@@ -314,9 +324,9 @@ function newPuzzle() {
             case "V": wildCubeName = 'universe'; break;
             case "Ʌ": wildCubeName = 'empty-set'; break;
         }
-        console.log(wildCubeName)
+        console.log("WILD CUBE NAME: " + wildCubeName)
         
-        // DISPLAY FORBIDDEN
+        // Display forbidden cubes
         console.log(puzzleData);
         console.log(puzzleData.forbidden)
         for (let forbiddenCube of puzzleData.forbidden) {
@@ -333,7 +343,7 @@ function newPuzzle() {
             forbiddenContainer.append(newForbiddenCube);
         };
 
-        // DISPLAY GOAL
+        // Display goal cubes
         function goalAddCube(cube, row) {
             const newGoalCube = document.createElement("div")
             if (cube < 0) newGoalCube.classList.add('upsidedown')
@@ -590,6 +600,7 @@ function newPuzzle() {
         
         // QUEUE NEW PUZZLE
         const queuePuzzleWorker = new Worker('onsets_worker.js');
+        workers.queueWorker = queuePuzzleWorker
         queuePuzzleWorker.postMessage(params)
 
         queuePuzzleWorker.onmessage = (e) => {
@@ -631,11 +642,6 @@ function newPuzzle() {
     };
 };
 
-function addColorChild(card, color) {
-    const newColor = document.createElement('div')
-    newColor.classList.add(color)
-    card.append(newColor)
-};
 // HEADING 
 const settingsIcon = document.querySelector('#settings-ico')
 // CUBE CONTAINERS
@@ -662,6 +668,11 @@ const solutionFormToggleDiv = document.querySelector('#solution-form-toggle-div'
 // KEYBOARD
 const keyboardContainer = document.querySelector('#keyboard-container');
 const keyboardButtons = document.querySelectorAll(".keyboard-row > div")
+
+const workers = {
+    mainWorker: null,
+    queueWorker: null
+}
 
 const inputValues = {
     "flatArray": {
@@ -2196,12 +2207,6 @@ function changeWildStyle(style) {
 // inputCube('red')
 // inputCube('right-parenthesis')
 // submitInput()
-
-// const terminateWorkers = new Worker('terminate_workers.js');
-// terminateWorkers.postMessage(new Date())
-// setInterval(() => {
-//     terminateWorkers.terminate()
-// }, 100)
 
 // DATABASES ARE PROBABLY FASTER
 // let newArr;
