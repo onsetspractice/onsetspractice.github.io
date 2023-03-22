@@ -650,6 +650,7 @@ onmessage = (e) => {
             console.log(variationsArr);
             if (double) {
                 console.log("DOUBLE", double);
+                metaData.push(double)
                 universeArr = universeArr.concat(universeArr.filter(val => double.includes(val))).sort();
                 console.log(universeArr)
             };
@@ -1241,7 +1242,7 @@ onmessage = (e) => {
                 for (let i = 0; i < 16; i++) array.push([]);
                 backupSolution.push([[], array]);
             };
-            const backupIndex = {"index": undefined, "length": 3}
+            const backupIndex = {index: undefined, length: 3}
             let permutationsCount = 0;
             let findPermCount = 0;
     
@@ -1547,12 +1548,13 @@ onmessage = (e) => {
         generateSolutions()
         console.log(solution)
         // solution = {
-        //     "restriction": ["R", "<", "B"],
-        //     "cards": ["BG", "BRG", ""],
-        //     "flag": "RUB",
-        //     "blankCard": "BRY"
+        //     restriction: ["R", "<", "B"],
+        //     cards: ["BG", "BRG", ""],
+        //     flag: "RUB",
+        //     blankCard: "BRY"
         // }
 
+        console.log(randomize)
         if (returnNewPuzzle) return generatePuzzle(randomize, setCubes, setUniverse, setVariations, setVariationsLength, setGoal, setForbidden, forceSymmetricDifference);
         class PuzzleData {
             constructor(cubesArr, modifiedCubesArr, universeArr, variationsArr, variationsMap, goalArr, goalShape, goalValues, forbiddenArr, solution, metaData) {
