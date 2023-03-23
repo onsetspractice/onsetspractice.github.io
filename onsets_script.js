@@ -881,7 +881,7 @@ function showKeyboard(e) {
 
             let leftBound = (container.offsetWidth - wrap.values[row]) / 2
             let rightBound = leftBound + wrap.values[row]
-            if (e.offsetX < leftBound) {
+            if (e.offsetX < leftBound) { // Clicked to the left of all cubes
 
                 frontCursor = true;
                 if (row > 0) { // Ensure cube is not very first cube
@@ -892,10 +892,11 @@ function showKeyboard(e) {
                     column = null
                 }
 
-            } else if (e.offsetX > rightBound) {
-                // console.log("RIGHT")
+            } else if (e.offsetX > rightBound) { // Clicked to the right of all cubes
                 column = wrap.widths[row].length - 1
-                if (wrap.row > row) {
+                // Move cursor to first position of next row if applicable
+
+                if (wrap.row > row) { 
                     clickedRow = row + 1
                     cursorRow[0] = row + 1
                     frontCursor = true;
@@ -924,12 +925,19 @@ function showKeyboard(e) {
                             row--
                             column = wrap.elements[row].length - 1
                         }
+                    }4
+                } else if (column === wrap.elements[row].length - 1) { // If clicked to the right of last cube in row
+                    if (wrap.row > row) { // Move cursor to first position of next row if applicable
+                        clickedRow = row + 1
+                        cursorRow[0] = row + 1
+                        frontCursor = true;
                     }
                 }
 
             } 
 
         } else {
+
             let clickedCube = e.target
             if (clickedCube.classList.contains('pointer')) return;
             if (clickedCube.nodeName === 'svg') return;
@@ -948,6 +956,13 @@ function showKeyboard(e) {
                         row--
                         column = wrap.elements[row].length - 1
                     }
+                }
+            } else if (column === wrap.elements[row].length - 1) {
+                // If clicked to the right of last cube in row
+                if (wrap.row > row) { // Move cursor to first position of next row if applicable
+                    clickedRow = row + 1
+                    cursorRow[0] = row + 1
+                    frontCursor = true;
                 }
             }
         }
