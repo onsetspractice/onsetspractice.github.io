@@ -624,6 +624,7 @@ function newPuzzle() {
         queuePuzzleWorker.onmessage = (e) => {
             queuedPuzzleData = e.data
             queuePuzzleWorker.terminate();
+            console.log("DONE QUEUE PUZZLE")
         }
         console.groupEnd()
 
@@ -746,66 +747,15 @@ let stopTimer = new Date(); console.log((stopTimer.getTime() - setTimer.getTime(
 console.log(' > DONE')
 
 keyboardContainer.addEventListener('click', function(e) {e.stopPropagation()})
-
-
 document.addEventListener('click', hideKeyboard);
 
-function hideKeyboard(removeActiveClasslist) {
-
-    if (!currInput) return;
-
-    const activeContainer = document.querySelector('#restriction-container.active, #solution-container.active')
-
-    let selectedCubeIndex, wrap, cursorRow
-    switch (currInput) {
-        case "restriction1":
-            cursorRow = inputValues.cursorRow.restrictionArr1;
-            wrap = inputValues.wrap.restrictionArr1;
-            selectedCubeIndex = inputValues.selectedCubeIndex.restrictionArr1
-            break;
-        case "setName1":
-            cursorRow = inputValues.cursorRow.setNameArr1;
-            wrap = inputValues.wrap.setNameArr1
-            selectedCubeIndex = inputValues.selectedCubeIndex.setNameArr1
-            break;
-        case "restriction2":
-            cursorRow = inputValues.cursorRow.restrictionArr2;
-            wrap = inputValues.wrap.restrictionArr2;
-            selectedCubeIndex = inputValues.selectedCubeIndex.restrictionArr2
-            break;
-        case "setName2":
-            cursorRow = inputValues.cursorRow.setNameArr2;
-            wrap = inputValues.wrap.setNameArr2;
-            selectedCubeIndex = inputValues.selectedCubeIndex.setNameArr2
-            break;
-    };
-    if (wrap) {
-        for (let row of wrap.elements) {
-            for (let node of row) {
-                node.dataset.cursorOffset = 0
-            }
-        }
-
-        selectedCubeIndex.row = wrap.row
-        cursorRow[0] = wrap.row
-        selectedCubeIndex.column = wrap.elements[wrap.row].length - 1
-        alignCursor()
-        alignNodes()
-    }
-
-    cursor.classList.remove('blink-animation')
-    if (activeContainer) {
-        activeContainer.classList.remove('active')
-    }
-    keyboardContainer.classList.add("hidden")
-
-    currInput = null;
-}
+restrictionContainer.addEventListener('click', showKeyboard);
+solutionContainer.addEventListener('click', showKeyboard);
 
 function showKeyboard(e) {
     
     let target = (e.target.id) ? e.target.id : e.target.parentNode.id
-    let targetElement = document.querySelector(`#${target}`)
+    const targetElement = document.querySelector(`#${target}`)
 
     e.stopPropagation();
     cursor.classList.add('blink-animation')
@@ -921,11 +871,13 @@ function showKeyboard(e) {
                         column--
                     } else {  // If cube is first of its row
                         frontCursor = true;
-                        if (row > 0) { // Ensure cube is not very first cube
+                        if (row === 0) { // Cube is very first cube
+                            column = null
+                        } else { // Default, select last cube of previous row
                             row--
                             column = wrap.elements[row].length - 1
                         }
-                    }4
+                    }
                 } else if (column === wrap.elements[row].length - 1) { // If clicked to the right of last cube in row
                     if (wrap.row > row) { // Move cursor to first position of next row if applicable
                         clickedRow = row + 1
@@ -940,7 +892,6 @@ function showKeyboard(e) {
 
             let clickedCube = e.target
             if (clickedCube.classList.contains('pointer')) return;
-            if (clickedCube.nodeName === 'svg') return;
             let halfWidth = (clickedCube.classList.contains('cube')) ? 23 : 8
             clickedRow = parseInt(clickedCube.dataset.row)
             row = clickedRow
@@ -952,7 +903,9 @@ function showKeyboard(e) {
                     column--
                 } else { // If cube is first of its row
                     frontCursor = true;
-                    if (row > 0) { // Ensure cube is not very first cube
+                    if (row === 0) { // Cube is very first cube
+                        column = null
+                    } else { // Default, select last cube of previous row
                         row--
                         column = wrap.elements[row].length - 1
                     }
@@ -990,26 +943,70 @@ function showKeyboard(e) {
             hideKeyboard()
             return;
         }
-        if (activeSolution === 'solution1') {
-            currInput = 'restriction1'
-        } else {
-            currInput = 'restriction2'
-        }
+        currInput = (activeSolution === 'solution1') ? 'restriction1' : 'restriction2'
         restrictionContainer.classList.add('active')
         restrictionContainer.append(cursor)
         alignCursor([0, 0])
     } else {
-        if (activeSolution === 'solution1') {
-            currInput = 'setName1'
-        } else {
-            currInput = 'setName2'
-        }
+        currInput = (activeSolution === 'solution1') ? 'setName1' : 'setName2'
         solutionContainer.classList.add('active')
         solutionContainer.append(cursor)
         alignCursor([0, 0])
     };
 };
 
+function hideKeyboard() {
+
+    if (!currInput) return;
+
+    const activeContainer = document.querySelector('#restriction-container.active, #solution-container.active')
+
+    let selectedCubeIndex, wrap, cursorRow
+    switch (currInput) {
+        case "restriction1":
+            cursorRow = inputValues.cursorRow.restrictionArr1;
+            wrap = inputValues.wrap.restrictionArr1;
+            selectedCubeIndex = inputValues.selectedCubeIndex.restrictionArr1
+            break;
+        case "setName1":
+            cursorRow = inputValues.cursorRow.setNameArr1;
+            wrap = inputValues.wrap.setNameArr1
+            selectedCubeIndex = inputValues.selectedCubeIndex.setNameArr1
+            break;
+        case "restriction2":
+            cursorRow = inputValues.cursorRow.restrictionArr2;
+            wrap = inputValues.wrap.restrictionArr2;
+            selectedCubeIndex = inputValues.selectedCubeIndex.restrictionArr2
+            break;
+        case "setName2":
+            cursorRow = inputValues.cursorRow.setNameArr2;
+            wrap = inputValues.wrap.setNameArr2;
+            selectedCubeIndex = inputValues.selectedCubeIndex.setNameArr2
+            break;
+    };
+
+    if (wrap) { // Clicked on container while another container was still active
+        for (let row of wrap.elements) {
+            for (let node of row) {
+                node.dataset.cursorOffset = 0
+            }
+        }
+
+        selectedCubeIndex.row = wrap.row
+        cursorRow[0] = wrap.row
+        selectedCubeIndex.column = wrap.elements[wrap.row].length - 1
+        alignCursor()
+        alignNodes()
+    }
+
+    cursor.classList.remove('blink-animation')
+    if (activeContainer) {
+        activeContainer.classList.remove('active')
+    }
+    keyboardContainer.classList.add("hidden")
+
+    currInput = null;
+}
 
 // Add colors when clicking on Blank Wild Card
 blankWildContainer.addEventListener('click', (e) => {
@@ -1200,8 +1197,6 @@ function resizeNewAnswer() {
 }
 
 submitButton.addEventListener('click', submitInput);
-restrictionContainer.addEventListener('click', showKeyboard);
-solutionContainer.addEventListener('click', showKeyboard);
 const newAnswer = document.createElement('div')
 const answerBackground = document.createElement('div')
 newAnswer.id = 'new-answer'
@@ -1409,12 +1404,14 @@ function checkInputWidth(cubeWidth, element) {
     let frontCursor;
 
     if (element) {
+        
         // Append element if one is passed
-
+        
         // Create index for new cube
         let newRow, newColumn
-
+        
         if (wrap.values[selectedCubeIndex.row] + cubeWidth >= containerWidth - 10) {
+            console.log("WANT")
             // If current row is too wide, move to next row
             // Also, make sure cursor is not front cursor
 
@@ -1431,6 +1428,7 @@ function checkInputWidth(cubeWidth, element) {
             }
 
             if (selectedCubeIndex.column === wrap.widths[selectedCubeIndex.row].length - 1) {
+                console.log("ONE")
                 // Selected cube is last fitting cube in row
                 newRow = selectedCubeIndex.row + 1
                 newColumn = 0
@@ -1445,7 +1443,7 @@ function checkInputWidth(cubeWidth, element) {
                     changeRows()
                 } else {
                     // Case where cursor is at leftmost position on non-first row
-
+                    
                     let overflowData = stopOverflow(selectedCubeIndex.row)
                     cursorAnimationDuration = overflowData[0]
                     nodeAnimationDuration = overflowData[1]
@@ -1458,7 +1456,7 @@ function checkInputWidth(cubeWidth, element) {
                 // Edge case where cube must move to next row but other objects are in front (i.e. parenthesis that fit)
                 let totalWidth = wrap.widths[selectedCubeIndex.row].slice(0, selectedCubeIndex.column + 1).reduce((a, b) => a + b, 0)
                 if (totalWidth + cubeWidth > containerWidth - 10) {
-
+                    
                     case1 = true
 
                     newRow = selectedCubeIndex.row
@@ -1467,7 +1465,13 @@ function checkInputWidth(cubeWidth, element) {
 
                 } else {
                     newRow = selectedCubeIndex.row
-                    newColumn = selectedCubeIndex.column + 1
+
+                    if (selectedCubeIndex.column === null) {
+                         // Special case for first cube
+                        newColumn = selectedCubeIndex.column + 0
+                    } else {
+                        newColumn = selectedCubeIndex.column + 1
+                    }
                     wrap.values[newRow] += cubeWidth
 
                     let overflowData = stopOverflow(selectedCubeIndex.row)
@@ -1772,13 +1776,14 @@ function stopOverflow(startIndex) {
     for (let i = startIndex; i < wrap.elements.length - 1; i++) {
 
         let overflowAmount = (wrap.values[i]) - (containerWidth - 10)
+        console.log(overflowAmount)
 
-        if (overflowAmount > 0 && i === wrap.row) {
+        if (overflowAmount >= 0 && i === wrap.row) {
             wrap.row++
             changeRows()
         }
         
-        while (overflowAmount > 0) {
+        while (overflowAmount >= 0) {
 
             let width = wrap.widths[i].pop()
             overflowAmount -= width
@@ -1854,7 +1859,6 @@ function stopEmptySpace(startIndex) {
     let cursorAnimationDuration = [0, 70];
     let nodeAnimationDuration = 120;
     let frontCursor = null;
-    let defaultBehavior = false;
 
     if (startIndex === undefined) {
         startIndex = 0;
