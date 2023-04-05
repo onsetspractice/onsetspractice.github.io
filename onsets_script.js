@@ -95,6 +95,9 @@ function addColorChild(card, color) {
     newColor.classList.add(color)
     card.append(newColor)
 };
+function randomArrayValue(arr) {
+    return arr[getRandomNumber(0, arr.length - 1)]
+};
 // End of functions
 
 // Create Elements
@@ -102,35 +105,35 @@ const cursor = document.createElement('div')
 cursor.id = 'cursor'
 cursor.classList.add('blink-animation')
 
-let puzzleParamaters = 
-{
-    randomize: 
-        false,
-    setCubes: 
-        [   
-            ["R", "G", "G", "V", "Y", "B"],
-            [1, 3, 5],
-            ["'", "-", "-", "-"],
-            ["<", "="]
-        ],
-    setUniverse:
-        ['RG', 'BRY', 'RGY', 'B', 'BRG', 'Y', 'BG', '', 'BRGY', 'G', 'R', 'BY', 'RY'],
-    setVariations:
-        ['symmetricDifference', 'blankWild', 'wild', 'requiredCube'],
-    setVariationsLength: 
-        4,
-    setGoal:
-        {
-            goalArr: [5, "*", 1, "*", 2],
-            goalValues: [10],
-            goalShape: 5
-        },
-    setForbidden:
-        {
-            forbiddenArrLength: 0
-        },
-    forceSymmetricDifference: true,
-}
+// let puzzleParamaters = 
+// {
+//     randomize: 
+//         false,
+//     setCubes: 
+//         [   
+//             ["R", "G", "G", "V", "Y", "B"],
+//             [1, 3, 5],
+//             ["'", "-", "-", "-"],
+//             ["<", "="]
+//         ],
+//     setUniverse:
+//         ['RG', 'BRY', 'RGY', 'B', 'BRG', 'Y', 'BG', '', 'BRGY', 'G', 'R', 'BY', 'RY'],
+//     setVariations:
+//         ['symmetricDifference', 'blankWild', 'wild', 'requiredCube'],
+//     setVariationsLength: 
+//         4,
+//     setGoal:
+//         {
+//             goalArr: [5, "*", 1, "*", 2],
+//             goalValues: [10],
+//             goalShape: 5
+//         },
+//     setForbidden:
+//         {
+//             forbiddenArrLength: 0
+//         },
+//     forceSymmetricDifference: true,
+// }
 
 // RESTRICTIONLESS PUZZLE
 // puzzleParamaters = 
@@ -141,13 +144,13 @@ let puzzleParamaters =
 //         [   
 //             ["R", "G", "B"],
 //             [1, 3, 5],
-//             ["'", "-", "-", "-"],
-//             ["<", "="]
+//             ["'", "-", "U", "-"],
+//             ["V", "V"]
 //         ],
 //     'setUniverse':
 //         ['RG', 'BRY', 'RGY', 'B', 'BRG', 'Y', 'BG', '', 'BRGY', 'G', 'R', 'BY', 'RY'],
 //     'setVariations':
-//         ['symmetricDifference', 'double'],
+//         ['symmetricDifference', 'noNull'],
 //     'setVariationsLength': 
 //         2,
 //     'setGoal':
@@ -160,7 +163,7 @@ let puzzleParamaters =
 //         {
 //             'forbiddenArrLength': 0
 //         },
-//     'forceSymmetricDifference': true,
+//     'forceSymmetricDifference': false,
 // }
 
 // puzzleParamaters = 
@@ -938,20 +941,26 @@ function showKeyboard(e) {
         alignNodes()
 
     } else if (target === 'restriction-container') {
+
+        currInput = (activeSolution === 'solution1') ? 'restriction1' : 'restriction2'
+
         if (puzzleData.metaData.includes('noRestrictions')) {
             notify('No Restriction Cubes Avaiable!', 'red', 'bounce', 1000, '40px', '260px')
             hideKeyboard()
             return;
         }
-        currInput = (activeSolution === 'solution1') ? 'restriction1' : 'restriction2'
+
         restrictionContainer.classList.add('active')
         restrictionContainer.append(cursor)
         alignCursor([0, 0])
+
     } else {
+
         currInput = (activeSolution === 'solution1') ? 'setName1' : 'setName2'
         solutionContainer.classList.add('active')
         solutionContainer.append(cursor)
         alignCursor([0, 0])
+
     };
 };
 
@@ -1411,7 +1420,6 @@ function checkInputWidth(cubeWidth, element) {
         let newRow, newColumn
         
         if (wrap.values[selectedCubeIndex.row] + cubeWidth >= containerWidth - 10) {
-            console.log("WANT")
             // If current row is too wide, move to next row
             // Also, make sure cursor is not front cursor
 
@@ -1426,9 +1434,8 @@ function checkInputWidth(cubeWidth, element) {
                     return false;
                 }
             }
-
+            
             if (selectedCubeIndex.column === wrap.widths[selectedCubeIndex.row].length - 1) {
-                console.log("ONE")
                 // Selected cube is last fitting cube in row
                 newRow = selectedCubeIndex.row + 1
                 newColumn = 0
@@ -1452,10 +1459,11 @@ function checkInputWidth(cubeWidth, element) {
 
             } else {
                 // Default
-
-                // Edge case where cube must move to next row but other objects are in front (i.e. parenthesis that fit)
+                
                 let totalWidth = wrap.widths[selectedCubeIndex.row].slice(0, selectedCubeIndex.column + 1).reduce((a, b) => a + b, 0)
-                if (totalWidth + cubeWidth > containerWidth - 10) {
+
+                if (totalWidth + cubeWidth >= containerWidth - 10) {
+                    // Edge case where cube must move to next row but other objects are in front (i.e. parenthesis that fit)
                     
                     case1 = true
 
@@ -1657,25 +1665,6 @@ function checkInputWidth(cubeWidth, element) {
     alignNodes(nodeAnimationDuration)
 
     return true;
-    
-    if (wrap.row === 1 && wrap.values[1] === 0 && boardContainer.offsetHeight > 540) {
-        wrap.row--
-        changeRows(input, wrap)
-    } else if (wrap.values[wrap.row] + cubeWidth >= input.offsetWidth) {
-        if (wrap.row === 0) {
-            wrap.row++
-            changeRows(input, wrap)
-        } else {
-            if (input === restrictionContainer) {
-                notify(`Restriction is too big!`, 'red', 'bounce', 1000, '40px', '190px')
-            } else {
-                notify(`Solution is too big!`, 'red', 'bounce', 1000, '40px', '170px')
-            };
-            return false;
-        }
-    }
-    wrap.values[wrap.row] += cubeWidth
-    return true;
 }
 
 window.onresize = () => {
@@ -1765,7 +1754,6 @@ function stopOverflow(startIndex) {
     let cursorAnimationDuration = [0, 30];
     let nodeAnimationDuration = 120;
     let frontCursor = null;
-    let defaultBehavior = false;
 
     if (startIndex === undefined) {
         startIndex = 0
@@ -1776,7 +1764,6 @@ function stopOverflow(startIndex) {
     for (let i = startIndex; i < wrap.elements.length - 1; i++) {
 
         let overflowAmount = (wrap.values[i]) - (containerWidth - 10)
-        console.log(overflowAmount)
 
         if (overflowAmount >= 0 && i === wrap.row) {
             wrap.row++
@@ -1787,7 +1774,6 @@ function stopOverflow(startIndex) {
 
             let width = wrap.widths[i].pop()
             overflowAmount -= width
-            console.log(width)
 
             let element = wrap.elements[i].pop()
             let newRow = parseInt(element.dataset.row) + 1
@@ -2476,7 +2462,7 @@ function submitInput() {
                 if (operation === "=") restrictedCards = restrictedCards.concat(rightVal.filter(val => !leftVal.includes(val)))
             }
             console.log(restrictedCards)
-            if (!restrictedCards.length) nullRestriction = true;
+            if (!restrictedCards.length && !puzzleData.metaData.includes('noRestrictions')) nullRestriction = true;
             if (i) {
                 solutionSet2 = parsedSetName.filter(val => !restrictedCards.includes(val))
             } else {
@@ -2533,7 +2519,7 @@ function submitInput() {
             };
 
             if (nullRestriction && puzzleData.variations.includes('noNull')) { // NO NULL
-                resultParagraph.innerText = `NUll Restriction.`
+                resultParagraph.innerText = `Null Restriction.`
                 return;
             }
 
@@ -2572,6 +2558,7 @@ function submitInput() {
             console.log(requiredContainer.dataset.values)
             console.log(resourcesContainer.dataset.values)
             for (let i = 1; i <= (twoSolutions ? 4 : 2); i++) {
+
                 let currWild = (i <= 2) ? inputValues.wildCube.solution1 : inputValues.wildCube.solution2
                 console.log(currWild)
                 let requiredValues = requiredContainer.dataset.values
@@ -2584,9 +2571,15 @@ function submitInput() {
                 let resourcesScore = altCalcScore(resourcesValues)
                 let input
                 switch (i) {
-                    case 1: input = restrictionArr1; break;
+                    case 1:
+                        if (puzzleData.metaData.includes('noRestrictions')) continue;
+                        input = restrictionArr1; 
+                        break;
                     case 2: input = setNameArr1; break;
-                    case 3: input = restrictionArr2; break;
+                    case 3:
+                        if (puzzleData.metaData.includes('noRestrictions')) continue;
+                        input = restrictionArr2; 
+                        break;
                     case 4: input = setNameArr2; break;
                 };
         
@@ -2604,6 +2597,7 @@ function submitInput() {
                     let curr = inputScore[j]
                     if (curr < min) {
                         console.log(i)
+                        console.log("LOG")
                         resultParagraph.innerText = `Required cubes missing from Solution.`
                         return;
                     };
@@ -3407,6 +3401,12 @@ function changeWildStyle(style) {
 document.addEventListener('keydown', function (keypress) {
     if (keypress.key !== 'p') return
     console.log(inputValues)
+
+    // let keysArr = ['ArrowLeft', 'ArrowRight', 'b', 'r', 'n', 
+    // '-', "'", 'v', 'm', '(', ')', 'Backspace']
+    // for (let i = 0; i < 20; i++) {
+    //     document.dispatchEvent(new KeyboardEvent('keydown', {'key': randomArrayValue(keysArr)}));
+    // }
 
     // answerContent.scrollTo({top: answerContent.scrollTop - 10})
     // console.log(answerContent.scrollTop)
