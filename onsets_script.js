@@ -2716,8 +2716,12 @@ function submitInput() {
                     answerRightToggle.dataset.active = 'true'
                     inputRestriction.innerHTML = ""
                     inputSetName.innerHTML = ""
-                    for (let node of inputValues.divNodes.restrictionArr2) inputAnswerCube(inputRestriction, node, inputValues.wildCube.solution2)
-                    for (let node of inputValues.divNodes.setNameArr2) inputAnswerCube(inputSetName, node, inputValues.wildCube.solution2)
+                    for (let node of inputValues.wrap.restrictionArr2.elements.flat()) {
+                        inputAnswerCube(inputRestriction, node, inputValues.wildCube.solution2)
+                    }
+                    for (let node of inputValues.wrap.setNameArr2.elements.flat()) {
+                        inputAnswerCube(inputSetName, node, inputValues.wildCube.solution2)
+                    }
                     evaluationParagraph.innerText = `Your solution evaluates to ${solutionSet2.length} cards:`
                     inputCardSet.innerHTML = ''
                     for (let node of inputCardsArr[1]) inputCardSet.append(node)
@@ -2727,8 +2731,12 @@ function submitInput() {
                     answerRightToggle.dataset.active = 'false'
                     inputRestriction.innerHTML = ""
                     inputSetName.innerHTML = ""
-                    for (let node of inputValues.divNodes.restrictionArr1) inputAnswerCube(inputRestriction, node, inputValues.wildCube.solution1)
-                    for (let node of inputValues.divNodes.setNameArr1) inputAnswerCube(inputSetName, node, inputValues.wildCube.solution1)
+                    for (let node of inputValues.wrap.restrictionArr1.elements.flat()) {
+                        inputAnswerCube(inputRestriction, node, inputValues.wildCube.solution1)
+                    }
+                    for (let node of inputValues.wrap.setNameArr1.elements.flat()) {
+                        inputAnswerCube(inputSetName, node, inputValues.wildCube.solution1)
+                    }
                     evaluationParagraph.innerText = `Your solution evaluates to ${solutionSet1.length} cards:`
                     inputCardSet.innerHTML = ''
                     for (let node of inputCardsArr[0]) inputCardSet.append(node)
@@ -2747,10 +2755,11 @@ function submitInput() {
         }
 
         // Inputted Solution
-        function inputAnswerCube(input, cube, currWild, cloneNode = false) {
+
+        function inputAnswerCube(input, cube, currWild) {
             cube.style.left = '0px'
             cube.style.top = '0px'
-            cloneNode ? input.append(cube.cloneNode()) : input.append(cube)
+            input.append(cube.cloneNode())
             if (!puzzleData.variationsMap.get('wild')) return;
             // Give some wild class name 
             const recentCube = input.lastElementChild
@@ -2775,10 +2784,10 @@ function submitInput() {
         inputSolutionContainer.classList = 'answer-solution-container'
         bar.style.cssText = 'width: 100%; height: 2px; background-color: gray; margin: 5px'
         for (let node of inputValues.wrap.restrictionArr1.elements.flat()) {
-            inputAnswerCube(inputRestriction, node, inputValues.wildCube.solution1, true)
+            inputAnswerCube(inputRestriction, node, inputValues.wildCube.solution1)
         }
         for (let node of inputValues.wrap.setNameArr1.elements.flat()) {
-            inputAnswerCube(inputSetName, node, inputValues.wildCube.solution1, true)
+            inputAnswerCube(inputSetName, node, inputValues.wildCube.solution1)
         }
         if (!puzzleData.metaData.includes('noRestrictions')) {
             inputSolutionContainer.append(inputRestriction)
@@ -2792,7 +2801,7 @@ function submitInput() {
         evaluationParagraph.innerText = `Your solution evaluates to ${solutionSet1.length} cards:`
         answerContent.append(evaluationParagraph)
         
-        // INPUT CARDS
+        // Input Cards
         let inputCardsArr = [[], []]
         const inputCardSet = document.createElement('div')
         inputCardSet.classList.add('card-set')
@@ -2841,12 +2850,12 @@ function submitInput() {
         for (let node of inputCardsArr[0]) inputCardSet.append(node)
         answerContent.append(inputCardSet)
 
-        // SEPARATE ANSWER
+        // Separate Answer
         const horizontalRule = document.createElement('hr')
         horizontalRule.style.cssText = 'width: 80%;'
         answerContent.append(horizontalRule)
         
-        // DEFINED TITLE
+        // Defined Title
         const titleNode2 = document.createElement('h2')
         titleNode2.innerText = 'Solution'
         answerContent.append(titleNode2)
@@ -2908,7 +2917,7 @@ function submitInput() {
             for (let j = 0; j < 2; j++) {
 
                 // Set loop for all solutions and flags
-                let currIterable, noRestrictions
+                let currIterable
                 if (twoSolutions) {
                     if (j) {
                         currIterable = puzzleData.solution[i].flag;
@@ -2923,7 +2932,6 @@ function submitInput() {
                     };
                 }
                 if (!currIterable) {
-                    noRestrictions = true;
                     continue;
                 }
 
