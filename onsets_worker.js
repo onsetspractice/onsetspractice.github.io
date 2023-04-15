@@ -485,9 +485,9 @@ onmessage = (e) => {
                         case "shiftPermitted": variationsArr.push('shiftPermitted'); break;
                         case "noNull": variationsArr.push("noNull"); noNull = true; break;
                         case "absValue": variationsArr.push("absValue"); break;
-                        case "double": variationsArr.push({"double": variationInput("double")}); break;
-                        // case "double": variationsArr.push({"double": "B"})
-                        // double = ["BRGY", "BRY", "BR", "BRG"]; break;
+//                         case "double": variationsArr.push({"double": variationInput("double")}); break;
+                        case "double": variationsArr.push({"double": "(B-R)'"})
+                        double = ["BR", "BRY", "BRG", "BRGY", "RG", "RGY", "GY", "G", "RY", '']; break;
                         case "requiredCard": variationsArr.push({"requiredCard": variationInput("requiredcard")}); break;
                         case "forbiddenCard": variationsArr.push({"forbiddenCard": variationInput("forbiddencard")}); break;
                         case "blankWild": variationsArr.push("blankWild"); blankWild = true; break;
@@ -552,6 +552,7 @@ onmessage = (e) => {
                         if (double.length === 0 || double.length === universeArr.length) return variationInput("double")
                         return set.join("");
                     case "requiredcard":
+                        return ["BR"]
                         if (universeArr.includes("") && getRandomNumber(1, 4) === 1) {
                             return ""
                         } else {
