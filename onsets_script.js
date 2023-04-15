@@ -185,7 +185,7 @@ puzzleParamaters =
         6,
     'setGoal':
         {
-            'goalArr': [-2, "+, -1 "*", -1],
+            'goalArr': [-2, "+, -1, "*", -1],
             'goalValues': [3],
             'goalShape': 5
         },
