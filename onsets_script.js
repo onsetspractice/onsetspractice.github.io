@@ -2598,7 +2598,7 @@ function submitInput() {
                     if (curr < min) {
                         console.log(i)
                         console.log("LOG")
-                        resultParagraph.innerText = `Required cubes missing from Solution.`
+                        resultParagraph.innerText = `Required cubes missing from solution.`
                         return;
                     };
     
