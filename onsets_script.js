@@ -136,79 +136,79 @@ cursor.classList.add('blink-animation')
 // }
 
 // RESTRICTIONLESS PUZZLE
-puzzleParamaters = 
-{
-    'randomize': 
-        false,
-    'setCubes': 
-        [   
-            ["R", "G", "B"],
-            [1, 3, 5],
-            ["'", "-", "U", "-"],
-            ["V", "V"]
-        ],
-    'setUniverse':
-        ['RG', 'BRY', 'RGY', 'B', 'BRG', 'Y', 'BG', '', 'BRGY', 'G', 'R', 'BY', 'RY'],
-    'setVariations':
-        ['symmetricDifference', 'noNull'],
-    'setVariationsLength': 
-        2,
-    'setGoal':
-        {
-            'goalArr': [5, "*", 1, "*", 2],
-            'goalValues': [10],
-            'goalShape': 5
-        },
-    'setForbidden':
-        {
-            'forbiddenArrLength': 0
-        },
-    'forceSymmetricDifference': false,
-}
-
-puzzleParamaters = 
-{
-    'randomize': 
-        false,
-    'setCubes': 
-        [   
-            ["B", "G", "Y", "B", "G", "Y"],
-            [1, 3, 5],
-            ["'", "'", "-"],
-            ["V", "<"]
-        ],
-    'setUniverse':
-        ["BR", "BRY", "B", "BRG", "BRGY", "BGY", "BG", "RG", "RGY", "GY", "G", "RY", ''],
-    'setVariations':
-        ['symmetricDifference', 'double', 'twoSolutions', 'blankWild', 'noNull', 'requiredCard'],
-    'setVariationsLength': 
-        6,
-    'setGoal':
-        {
-            'goalArr': [-2, "+, -1, "*", -1],
-            'goalValues': [3],
-            'goalShape': 5
-        },
-    'setForbidden':
-        {
-            'forbiddenArrLength': 0
-        },
-    'forceSymmetricDifference': false,
-}
-
-// puzzleParamaters = {
-//     randomize: undefined,
-//     setCubes: undefined,
-//     setUniverse: undefined,
-//     setVariations: [],
-//     // setVariations:
-//     //     [ 'double', 'symmetricDifference'],
-//     setVariationsLength: 6,
-//     // setVariationsLength: 2,
-//     setGoal: undefined,
-//     setForbidden: undefined,
-//     forceSymmetricDifference: undefined,
+// puzzleParamaters = 
+// {
+//     'randomize': 
+//         false,
+//     'setCubes': 
+//         [   
+//             ["R", "G", "B"],
+//             [1, 3, 5],
+//             ["'", "-", "U", "-"],
+//             ["V", "V"]
+//         ],
+//     'setUniverse':
+//         ['RG', 'BRY', 'RGY', 'B', 'BRG', 'Y', 'BG', '', 'BRGY', 'G', 'R', 'BY', 'RY'],
+//     'setVariations':
+//         ['symmetricDifference', 'noNull'],
+//     'setVariationsLength': 
+//         2,
+//     'setGoal':
+//         {
+//             'goalArr': [5, "*", 1, "*", 2],
+//             'goalValues': [10],
+//             'goalShape': 5
+//         },
+//     'setForbidden':
+//         {
+//             'forbiddenArrLength': 0
+//         },
+//     'forceSymmetricDifference': false,
 // }
+
+// puzzleParamaters = 
+// {
+//     'randomize': 
+//         false,
+//     'setCubes': 
+//         [   
+//             ["B", "G", "Y", "B", "G", "Y"],
+//             [1, 3, 5],
+//             ["'", "'", "-"],
+//             ["<", "="]
+//         ],
+//     'setUniverse':
+//         ["BR", "BRY", "B", "BRG", "BRGY", "BGY", "BG", "RG", "RGY", "GY", "G", "RY", ''],
+//     'setVariations':
+//         ['double', 'twoSolutions', 'symmetricDifference', 'blankWild', 'noNull', 'requiredCard'],
+//     'setVariationsLength': 
+//         6,
+//     'setGoal':
+//         {
+//             'goalArr': [-1, "*", -2, "+", -1],
+//             'goalValues': [3],
+//             'goalShape': 6,
+//         },
+//     'setForbidden':
+//         {
+//             'forbiddenArrLength': 0
+//         },
+//     'forceSymmetricDifference': false,
+// }
+
+puzzleParamaters = {
+    randomize: undefined,
+    setCubes: undefined,
+    setUniverse: undefined,
+    setVariations: [],
+    // setVariations:
+    //     [ 'double', 'symmetricDifference'],
+    setVariationsLength: 6,
+    // setVariationsLength: 2,
+    setGoal: undefined,
+    setForbidden: undefined,
+    forceSymmetricDifference: undefined,
+}
 
 // NEW PUZZLE
 function newPuzzle() {

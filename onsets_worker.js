@@ -485,9 +485,9 @@ onmessage = (e) => {
                         case "shiftPermitted": variationsArr.push('shiftPermitted'); break;
                         case "noNull": variationsArr.push("noNull"); noNull = true; break;
                         case "absValue": variationsArr.push("absValue"); break;
-//                         case "double": variationsArr.push({"double": variationInput("double")}); break;
-                        case "double": variationsArr.push({"double": "(B-R)'"})
-                        double = ["BR", "BRY", "BRG", "BRGY", "RG", "RGY", "GY", "G", "RY", '']; break;
+                        case "double": variationsArr.push({"double": variationInput("double")}); break;
+                        // case "double": variationsArr.push({"double": "(B-R)'"})
+                        // double = ["BR", "BRY", "BRG", "BRGY", "RG", "RGY", "R", "GY", "Y", "G", "RY", '']; break;
                         case "requiredCard": variationsArr.push({"requiredCard": variationInput("requiredcard")}); break;
                         case "forbiddenCard": variationsArr.push({"forbiddenCard": variationInput("forbiddencard")}); break;
                         case "blankWild": variationsArr.push("blankWild"); blankWild = true; break;
@@ -552,7 +552,6 @@ onmessage = (e) => {
                         if (double.length === 0 || double.length === universeArr.length) return variationInput("double")
                         return set.join("");
                     case "requiredcard":
-                        return ["BR"]
                         if (universeArr.includes("") && getRandomNumber(1, 4) === 1) {
                             return ""
                         } else {
@@ -1286,47 +1285,49 @@ onmessage = (e) => {
                                 if (blankWild) {
                                     for (let goalVal of goalValues) {
                                         let goalDeviation = solutionEval - goalVal;
-                                        let avaiableCards = [];
+                                        let availableCards = [];
                                         switch (goalDeviation) {
                                             case -2:
                                                 if (permCards.includes("") || !double) continue;
-                                                avaiableCards = permCards.filter(val => double.includes(val));
-                                                if (forbiddenCard !== undefined) avaiableCards.filter(val => val !== forbiddenCard)
-                                                blankCard = randomArrayValue(avaiableCards);
+                                                availableCards = permCards.filter(val => double.includes(val));
+                                                if (forbiddenCard !== undefined) availableCards.filter(val => val !== forbiddenCard)
+                                                blankCard = randomArrayValue(availableCards);
                                                 if (blankCard) skip = true; break;
                                             case -1: 
-                                                avaiableCards = permCards;
+                                                availableCards = permCards;
                                                 if (permCards.includes("")) {
                                                     if (double) {
                                                         if (double && !double.includes("")) {
-                                                            avaiableCards = avaiableCards.filter(val => double.includes(val));
+                                                            availableCards = availableCards.filter(val => double.includes(val));
                                                         } else {
                                                             continue;
                                                         }
                                                     }
                                                 } else if (double) {
-                                                    avaiableCards = avaiableCards.filter(val => !double.includes(val))
+                                                    availableCards = availableCards.filter(val => !double.includes(val))
                                                 };
-                                                if (forbiddenCard !== undefined) avaiableCards.filter(val => val !== forbiddenCard)
-                                                blankCard = randomArrayValue(avaiableCards);
+                                                if (forbiddenCard !== undefined) availableCards.filter(val => val !== forbiddenCard)
+                                                blankCard = randomArrayValue(availableCards);
                                                 if (blankCard) skip = true; break;
                                             case 1:
                                                 if (!permCards.includes("")) continue;
                                                 if (double) {
                                                     if (double.includes("")) {
-                                                        avaiableCards = permCards.filter(val => !double.includes(val))
+                                                        availableCards = permCards.filter(val => !double.includes(val))
                                                     } else {
-                                                        avaiableCards = universeArr.filter(val => !(permCards.includes(val)));
+                                                        availableCards = universeArr.filter(val => !(permCards.includes(val)));
                                                     };
                                                 };
-                                                if (forbiddenCard !== undefined) avaiableCards.filter(val => val !== forbiddenCard)
-                                                blankCard = randomArrayValue(avaiableCards);
+                                                if (forbiddenCard !== undefined) availableCards.filter(val => val !== forbiddenCard)
+                                                blankCard = randomArrayValue(availableCards);
+                                                permCards = permCards.filter(val => val !== "")
                                                 if (blankCard) skip = true; break;
                                             case 2:
                                                 if (!permCards.includes("")) continue;
-                                                avaiableCards = universeArr.filter(val => !(permCards.includes(val)));
-                                                if (forbiddenCard !== undefined) avaiableCards.filter(val => val !== forbiddenCard)
-                                                blankCard = randomArrayValue(avaiableCards);
+                                                availableCards = universeArr.filter(val => !(permCards.includes(val)));
+                                                if (forbiddenCard !== undefined) availableCards.filter(val => val !== forbiddenCard)
+                                                blankCard = randomArrayValue(availableCards);
+                                                permCards = permCards.filter(val => val !== "")
                                                 if (blankCard) skip = true; break;
                                         };
                                         if (skip) break;
