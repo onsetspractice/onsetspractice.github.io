@@ -1,6 +1,9 @@
 let setTimer = new Date()
 
 // Start of functions
+function clone(arr) {
+    return JSON.parse(JSON.stringify(arr))
+}
 function getVariation(variation) {
     console.log()
     return puzzleData.variations[puzzleData.variations.findIndex(val => Object.keys(val)[0] === variation)][variation]
@@ -98,12 +101,189 @@ function addColorChild(card, color) {
 function randomArrayValue(arr) {
     return arr[getRandomNumber(0, arr.length - 1)]
 };
+function createSvg(type, parameters = {}) {
+
+    // let customText = parameters.customText
+    let color = parameters.color ?? '#ffffff'
+    let textWidth = parameters.textWidth ?? '0.38'
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+    
+    text.setAttribute('xml:space', 'preserve')
+    text.setAttribute('style', `font-weight:normal;font-size:6.65px;font-family:Arial;fill:${color};stroke:${color};stroke-width:${textWidth};`)
+    text.setAttribute('x', '3.75')
+    text.setAttribute('y', '7.96')
+    text.append(tspan)
+
+    if (!type) return
+
+    switch (type) {
+        case 'arrow':
+            svg.setAttribute('viewBox', "0 0 24 24")
+            svg.setAttribute('stroke', "currentColor")
+
+            path1.setAttribute('d', `M4.929 7.913l7.078 7.057 7.064-7.057a1 1 0 111.414 1.414l-7.77 7.764a1 
+            1 0 01-1.415 0L3.515 9.328a1 1 0 011.414-1.414z`);
+            svg.append(path1)
+            return svg
+        case 'settings':
+            svg.setAttribute('viewBox', "0 0 24 24")
+            svg.setAttribute('fill', "none")
+            svg.setAttribute('stroke', "currentColor")
+            path1.setAttribute('stroke-width', `2.34791`)
+            path2.setAttribute('stroke-width', `2.34791`)
+            path1.setAttribute('d', `m 15.521867,11.99822 a 3.5218678,3.5218678 0 1 1 -7.0437347,0 
+            3.5218678,3.5218678 0 0 1 7.0437347,0 z`)
+            path2.setAttribute('d', `m 21.019503,10.033625 c 2.061465,0.500105 2.061465,3.432646 0,3.932752 
+            a 2.0238998,2.0238998 0 0 0 -1.251438,3.020587 c 1.103519,1.811414 -0.969688,3.885794 -2.782274,2.782275 
+            a 2.0238998,2.0238998 0 0 0 -3.019416,1.250264 c -0.500105,2.061465 -3.432646,2.061465 -3.932752,0 
+            A 2.0238998,2.0238998 0 0 0 7.0130359,19.768066 C 5.2016221,20.871584 3.1272422,18.798378 4.2307606,16.985791 
+            A 2.0238998,2.0238998 0 0 0 2.9804977,13.966377 c -2.06146654,-0.500106 -2.06146654,-3.432647 0,-3.932752 
+            A 2.0238998,2.0238998 0 0 0 4.2319346,7.0130359 C 3.1284161,5.2016222 5.2016221,3.1272423 7.0142099,4.2307607 
+            A 2.0238998,2.0238998 0 0 0 10.033623,2.9804978 c 0.500106,-2.06146641 3.432647,-2.06146641 3.932752,0 a 
+            2.0238998,2.0238998 0 0 0 3.020589,1.2514369 c 1.811413,-1.1035184 3.885794,0.9696875 2.782275,2.7822753 
+            -0.713765,1.1692598 -0.08217,2.6954023 1.250264,3.019415 z`)
+            svg.append(path1)
+            svg.append(path2)
+            return svg
+        case 'warning':
+            svg.setAttribute('viewBox', "0 0 16 16")
+            svg.setAttribute('stroke', "currentColor")
+            svg.setAttribute('fill', "currentColor")
+            path1.setAttribute('d', `M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z`)
+            path2.setAttribute('d', `M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 
+            4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z`)
+            svg.append(path1)
+            svg.append(path2)
+            return svg
+        case 'clockwise-arrow':
+            svg.setAttribute('viewBox', "0 0 16 16")
+            svg.setAttribute('stroke', "currentColor")
+            svg.setAttribute('fill', "currentColor")
+            path1.setAttribute('d', `M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z`)
+            path1.setAttribute('fill-rule', 'evenodd')
+            path2.setAttribute('d', `M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z`)
+            svg.append(path1)
+            svg.append(path2)
+            return svg
+    }
+}
+function compareArr(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    arr1.sort();
+    arr2.sort();
+    for (let i = 0; i < arr1.length; i++) if (arr1[i] !== arr2[i]) return false;
+    return true;
+}
+function setInputFilter(textbox, inputFilter) {
+    // Input filter from StackOverflow
+    [ "input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop", "focusout" ].forEach(function(event) {
+        textbox.addEventListener(event, function(e) {
+            if (!inputFilter(this.value)) {
+                this.oldValue = this.value;
+                this.oldSelectionStart = this.selectionStart;
+                this.oldSelectionEnd = this.selectionEnd;
+            } else if (this.hasOwnProperty("oldValue")) {
+                this.value = this.oldValue;
+                this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+            } else {
+                this.value = '';
+            }
+        });
+    });
+};
 // End of functions
 
 // Create Elements
 const cursor = document.createElement('div')
 cursor.id = 'cursor'
 cursor.classList.add('blink-animation')
+const settingsIcon = createSvg('settings');
+settingsIcon.id = 'settings-ico'
+const header = document.querySelector('header')
+header.addEventListener('click', () => menuBackground.click())
+header.append(settingsIcon)
+
+const variationsArrowBox = document.querySelector('#variations-arrow-box')
+variationsArrowBox.addEventListener('click', function() {
+    this.parentElement.classList.toggle('shown')
+})
+const mapArrowBox = document.querySelector('#map-arrow-box')
+mapArrowBox.addEventListener('click', function() {
+    this.parentElement.classList.toggle('shown')
+})
+
+const loading = document.querySelector('#loading')
+const loadingText = document.createElement('p')
+const loadingTextContainer = document.createElement('div')
+loadingTextContainer.id = 'loading-text-container'
+loadingText.innerText = 'Loading puzzle...'
+loading.append(loadingTextContainer)
+loadingTextContainer.append(loadingText)
+document.body.append(loading)
+let loadingInterval, loadTimer = 0;
+
+function showLoading() {
+    variationsContainer.parentElement.classList.remove('shown')
+    variationsArrowBox.classList.remove('shown')
+    mapArrowBox.classList.remove('shown')
+    loading.classList.add('shown')
+    let interval = 1000;
+    loadingInterval = setInterval(() => {
+
+        let dotCount = loadingText.innerText.match(/\./g) ?? ''
+        dotCount = dotCount.length
+        if (dotCount === 3) {
+            dotCount = 0
+            interval = 1200;
+        } else {
+            dotCount++
+            interval = 500;
+        }
+        console.log('')
+        loadingText.innerText = 'Loading puzzle' + '.'.repeat(dotCount)
+        loadTimer += interval
+        if (loadTimer >= 3000 && !document.querySelector('#new-puzzle-button')) {
+            showNewPuzzleButton()
+        }
+    }, interval)
+}
+function hideLoading() {
+    loadTimer = 0;
+    variationsArrowBox.classList.add('shown')
+    mapArrowBox.classList.add('shown')
+    loading.classList.remove('shown')
+    const puzzleButton = document.querySelector('#new-puzzle-button')
+    if (puzzleButton) {
+        puzzleButton.classList.remove('shown')
+        setTimeout(() => {puzzleButton.remove()}, 100)
+    }
+    clearInterval(loadingInterval)
+    console.groupEnd()
+    console.groupEnd()
+    console.groupEnd()
+}
+function showNewPuzzleButton() {
+    const newPuzzleButton = document.createElement('div')
+    newPuzzleButton.id = 'new-puzzle-button'
+    loading.append(newPuzzleButton)
+    setTimeout(() => {newPuzzleButton.classList.add('shown')}, 10)
+    const newPuzzleButtonText = document.createElement('p')
+    newPuzzleButtonText.innerText = 'Generate New Puzzle'
+    const arrow = createSvg('clockwise-arrow')
+    newPuzzleButton.append(arrow)
+    newPuzzleButton.append(newPuzzleButtonText)
+    newPuzzleButton.addEventListener('click', () => {
+        hideLoading()
+        newPuzzle()
+        newPuzzleButton.classList.remove('shown')
+        setTimeout(() => {newPuzzleButton.remove()}, 100)
+    })
+}
 
 // let puzzleParamaters = 
 // {
@@ -196,22 +376,23 @@ cursor.classList.add('blink-animation')
 //     'forceSymmetricDifference': false,
 // }
 
-puzzleParamaters = {
-    randomize: undefined,
-    setCubes: undefined,
-    setUniverse: undefined,
+puzzleParameters = {
+    randomize: true,
+    setCubes: null,
+    setUniverse: null,
     setVariations: [],
     // setVariations:
     //     [ 'double', 'symmetricDifference'],
     setVariationsLength: 6,
     // setVariationsLength: 2,
-    setGoal: undefined,
-    setForbidden: undefined,
-    forceSymmetricDifference: undefined,
+    setGoal: null,
+    setForbidden: null,
+    forceSymmetricDifference: false,
 }
 
 // NEW PUZZLE
 function newPuzzle() {
+    showLoading()
     console.group("NEW PUZZLE")
 
     // Reset Containers
@@ -284,7 +465,7 @@ function newPuzzle() {
     changeRows(solutionContainer, inputValues.wrap.setNameArr2, true, 0)
 
     // Generate New Puzzle
-    params = Object.values(puzzleParamaters)
+    params = Object.values(puzzleParameters)
     console.log(params)
 
     console.log(workers)
@@ -616,10 +797,13 @@ function newPuzzle() {
             }
             variationsDisplay.children[i].innerText = variationToPush;
         }
+        hideLoading();
+
         console.log(puzzleData.variations)
         console.log(variationsDisplay)
         
         // Queue New Puzzle
+        console.groupCollapsed("QUEUE PUZZLE")
         const queuePuzzleWorker = new Worker('onsets_worker.js');
         workers.queueWorker = queuePuzzleWorker
         queuePuzzleWorker.postMessage(params)
@@ -664,8 +848,6 @@ function newPuzzle() {
     };
 };
 
-// Heading
-const settingsIcon = document.querySelector('#settings-ico')
 // Cube Containers
 const boardContainer = document.querySelector('#board-container')
 const forbiddenContainer = document.querySelector('#forbidden-container');
@@ -1186,8 +1368,8 @@ function resizeNewAnswer() {
     console.log("DEBUG")
     console.log(document.body.offsetWidth)
     console.log(document.body.getBoundingClientRect().width)
-    console.log(newAnswer.getBoundingClientRect().width)
-    console.log(newAnswer.getBoundingClientRect().x)
+    console.log(newResult.getBoundingClientRect().width)
+    console.log(newResult.getBoundingClientRect().x)
 
     let getCard = document.querySelector(".card-set .card.double")
     if (getCard) {
@@ -1201,23 +1383,23 @@ function resizeNewAnswer() {
     let leftOffset = Math.round((bodyWidth - newAnswerWidth) / 2)
 
 
-    newAnswer.style.width = newAnswerWidth + "px"
-    newAnswer.style.left = leftOffset + "px"
+    newResult.style.width = newAnswerWidth + "px"
+    newResult.style.left = leftOffset + "px"
 }
 
 submitButton.addEventListener('click', submitInput);
-const newAnswer = document.createElement('div')
-const answerBackground = document.createElement('div')
-newAnswer.id = 'new-answer'
+const newResult = document.createElement('div')
+const resultBackground = document.createElement('div')
+newResult.id = 'new-answer'
 
-answerBackground.id = 'answer-background'
-document.body.append(answerBackground)
-document.body.append(newAnswer)
+resultBackground.id = 'answer-background'
+document.body.append(resultBackground)
+document.body.append(newResult)
 
 // When clicking on answer background, hide newAnswer and answerBackground
-answerBackground.addEventListener('click', function(){
-    newAnswer.classList.remove('shown')
-    answerBackground.classList.remove('shown')
+resultBackground.addEventListener('click', function(){
+    newResult.classList.remove('shown')
+    resultBackground.classList.remove('shown')
 })
 
 document.addEventListener('keydown', function(keypress){
@@ -2473,17 +2655,17 @@ function submitInput() {
         console.log(solutionSet2)
         
         // DISPLAYING ANSWER
-        newAnswer.innerHTML = ''
+        newResult.innerHTML = ''
 
         // HEADER
         const answerHeader = document.createElement('div')
         answerHeader.id = 'answer-header'
         const backButton = document.createElement('div')
-        backButton.addEventListener('click', () => {answerBackground.click()})
+        backButton.addEventListener('click', () => {resultBackground.click()})
         const newPuzzleButton = document.createElement('div')
         newPuzzleButton.addEventListener('click', () => {
             newPuzzle(queuedPuzzleData)
-            answerBackground.click()
+            resultBackground.click()
         })
         backButton.classList.add('answer-button')
         newPuzzleButton.classList.add('answer-button')
@@ -2493,33 +2675,29 @@ function submitInput() {
         backButton.style.cssText = ''
         answerHeader.append(backButton)
         answerHeader.append(newPuzzleButton)
-        newAnswer.append(answerHeader)
+        newResult.append(answerHeader)
         
-        // CONTENT
+        // Contnet
         const answerContent = document.createElement('div')
         answerContent.id = 'answer-content'
 
-        // RESULT
-        const inputResult = document.createElement('div')
-        inputResult.id = 'input-result'
 
-        const resultTitle = document.createElement('h2')
-        const resultParagraph = document.createElement('p');
+        let title, paragraph = '';
 
         (function checkInput() {
 
-            resultTitle.innerText = 'Incorrect:'
+            title = 'Incorrect:'
 
             if (!puzzleData.goalValues.includes(solutionSet1.length)) {
-                resultParagraph.innerText = `Solution does not evaluate to goal.`
+                paragraph = `Solution does not evaluate to goal.`
                 return;
             } else if (!puzzleData.goalValues.includes(solutionSet2.length) && twoSolutions) {
-                resultParagraph.innerText = `Solution does not evaluate to goal.`
+                paragraph = `Solution does not evaluate to goal.`
                 return;
             };
 
             if (nullRestriction && puzzleData.variations.includes('noNull')) { // NO NULL
-                resultParagraph.innerText = `Null Restriction.`
+                paragraph = `Null Restriction.`
                 return;
             }
 
@@ -2544,12 +2722,12 @@ function submitInput() {
 
             if (puzzleData.variationsMap.get('requiredCube')) { // REQUIRED CUBE
                 if (restrictionArr1.concat(setNameArr1).indexOf(puzzleData.variationsMap.get('requiredCube')) === -1) {
-                    resultParagraph.innerText = `Solution does not contain required cube`
+                    paragraph = `Solution does not contain required cube`
                     return;
                 };
                 if (twoSolutions) {
                     if (restrictionArr2.concat(setNameArr2).indexOf(puzzleData.variationsMap.get('requiredCube')) === -1) {
-                        resultParagraph.innerText = `Solution does not contain required cube`
+                        paragraph = `Solution does not contain required cube`
                         return;
                     };
                 };
@@ -2598,7 +2776,7 @@ function submitInput() {
                     if (curr < min) {
                         console.log(i)
                         console.log("LOG")
-                        resultParagraph.innerText = `Required cubes missing from solution.`
+                        paragraph = `Required cubes missing from solution.`
                         return;
                     };
     
@@ -2626,10 +2804,10 @@ function submitInput() {
                             case 7: extraCube = '"Not"'
                         }
                         if (max === 0) {
-                            resultParagraph.innerText = `Resources does not contain a ${extraCube} cube.`
+                            paragraph = `Resources does not contain a ${extraCube} cube.`
                             return;
                         } else {
-                            resultParagraph.innerText = `${i % 2 == 0 ? 'Set Name' : 'Restriction'} has too many ${extraCube} cubes.`
+                            paragraph = `${i % 2 == 0 ? 'Set Name' : 'Restriction'} has too many ${extraCube} cubes.`
                             return;
                         };
                     };
@@ -2637,33 +2815,43 @@ function submitInput() {
             };
 
         if (solutionSet1 === solutionSet2) {
-            resultParagraph.innerText = `Both solutions cannot contain the same cards.`
+            paragraph = `Both solutions cannot contain the same cards.`
             return;
         }
 
         if (puzzleData.variations.includes('requiredCard')) {
             if (!solutionSet1.includes(getVariation('requiredCard'))) {
-                resultParagraph.innerText = `Solution does not contain required card.`
+                paragraph = `Solution does not contain required card.`
                 return;
             };
             if (twoSolutions && !solutionSet2.includes(getVariation('requiredCard'))) {
-                resultParagraph.innerText = `Solution does not contain required card.`
+                paragraph = `Solution does not contain required card.`
                 return;
             };
         };
         if (puzzleData.variations.includes('forbiddenCard')) {
             if (solutionSet1.includes(getVariation('forbiddenCard')) || solutionSet2.includes(getVariation('forbiddenCard'))) {
-                resultParagraph.innerText = `Solution contains forbidden card.`
+                paragraph = `Solution contains forbidden card.`
                 return;
             };
         };
-            resultTitle.innerText = 'Correct'
-            inputResult.style.backgroundColor = 'rgba(92, 255, 80, 0.518)';
+            title = 'Correct!'
         })();
 
-        inputResult.append(resultTitle)
-        inputResult.append(resultParagraph)
+        // Result Info
+        const inputResult = document.createElement('div')
+        inputResult.id = 'input-result'
         answerContent.append(inputResult)
+        if (title === 'Correct!') inputResult.classList.add('correct')
+
+        const resultTitle = document.createElement('h2')
+        resultTitle.innerText = title
+        inputResult.append(resultTitle)
+        if (paragraph.length) {
+            const resultParagraph = document.createElement('p');
+            resultParagraph.innerText = paragraph
+            inputResult.append(resultParagraph)
+        }
 
         // TITLE
         const titleNode = document.createElement('h2')
@@ -2782,7 +2970,6 @@ function submitInput() {
         const inputSetName = document.createElement('div')
         const bar = document.createElement('div')
         inputSolutionContainer.classList = 'answer-solution-container'
-        bar.style.cssText = 'width: 100%; height: 2px; background-color: gray; margin: 5px'
         for (let node of inputValues.wrap.restrictionArr1.elements.flat()) {
             inputAnswerCube(inputRestriction, node, inputValues.wildCube.solution1)
         }
@@ -3009,10 +3196,10 @@ function submitInput() {
         for (let node of computerCardsArr[0]) computerCardSet.append(node)
         answerContent.append(computerCardSet)
 
-        newAnswer.append(answerContent)
+        newResult.append(answerContent)
     
-        answerBackground.classList.toggle('shown')
-        newAnswer.classList.toggle('shown')
+        resultBackground.classList.toggle('shown')
+        newResult.classList.toggle('shown')
     } catch (error) {
         console.log(error)
         notify('Invalid input!', 'red', 'bounce', 1500, '', '')
@@ -3021,24 +3208,85 @@ function submitInput() {
 }
 for (let button of keyboardButtons) button.addEventListener('click', function() {inputCube(this.classList[1])});
 
-const mapArrowBox = document.querySelector('#map-arrow-box')
-const variationsArrowBox = document.querySelector('#variations-arrow-box')
-mapArrowBox.addEventListener('click', function() {
-    this.parentElement.classList.toggle('shown')
+
+const settings = {
+    headerText: 'Settings',
+    genNewPuzzle: false,
+    forceVariations: [],
+    forceSymmetricDifference: false
+}
+
+const settingsContainer = document.createElement('settings-container')
+settingsContainer.id = 'settings-container'
+header.append(settingsContainer)
+settingsContainer.addEventListener('click', (e) => e.stopPropagation())
+
+const settingsHeader = document.createElement('div')
+settingsHeader.id = 'settings-header'
+settingsContainer.append(settingsHeader)
+
+const settingsNavButton = document.createElement('settings-nav-button')
+settingsNavButton.id = 'settings-nav-button'
+settingsHeader.append(settingsNavButton)
+settingsNavButton.addEventListener('click', () => {
+    if (settings.headerText === 'Settings') {
+        menuBackground.click()
+        return;
+    }
+    settingsNodesContainer.classList.remove('page-2')
+    settingsHeaderText.classList.add('fade')
+    settingsNavButton.classList.add('fade')
+    settings.headerText = 'Settings'
 })
-variationsArrowBox.addEventListener('click', function() {
-    this.parentElement.classList.toggle('shown')
+settingsNavButton.addEventListener('transitionend', () => {
+    settingsNavButton.classList.remove('fade')
 })
-let genNewPuzzle = false;
-const settingsContainer = document.querySelector('#settings-container')
+const settingsHeaderText = document.createElement('h4')
+settingsHeaderText.innerText = 'Settings'
+settingsHeader.append(settingsHeaderText)
+settingsHeaderText.addEventListener('transitionend', () => {
+    settingsHeaderText.innerText = settings.headerText;
+    settingsHeaderText.classList.remove('fade')
+})
+
+const settingsOverflowContainer = document.createElement('div')
+settingsOverflowContainer.id = 'settings-overflow-container'
+settingsContainer.append(settingsOverflowContainer)
+
+const settingsNodesContainer = document.createElement('div')
+settingsNodesContainer.id = 'settings-nodes-container'
+settingsOverflowContainer.append(settingsNodesContainer)
+
+// Create menu background
 const menuBackground = document.createElement('div')
-const header = document.querySelector('header')
 menuBackground.id = 'menu-background'
+document.body.append(menuBackground)
 menuBackground.addEventListener('click', (e) => {
     if (wildPickerContainer.classList.contains('shown')) {
         hideWildPicker(e)
         return;
     }
+    if (settingsContainer.classList.contains('shown')) {
+        let newVariationsLength = variationCount.value
+        if (parseFloat(newVariationsLength) !== puzzleParameters.setVariationsLength) {
+            settings.genNewPuzzle = true;
+            puzzleParameters.setVariationsLength = parseFloat(newVariationsLength)
+        }
+        if (!compareArr(settings.forceVariations, puzzleParameters.setVariations)) {
+            settings.genNewPuzzle = true;
+            puzzleParameters.setVariations = clone(settings.forceVariations)
+        }
+        if (settings.forceSymmetricDifference !== puzzleParameters.forceSymmetricDifference) {
+            settings.genNewPuzzle = true;
+            puzzleParameters.forceSymmetricDifference = settings.forceSymmetricDifference
+        }
+        if (settings.genNewPuzzle) {
+            queuedPuzzleData = null;
+            newPuzzle()
+            settings.genNewPuzzle = false
+        }
+    }
+
     settingsContainer.classList.remove('shown')
     menuBackground.classList.remove('shown')
     header.classList.remove('dark')
@@ -3050,15 +3298,7 @@ menuBackground.addEventListener('click', (e) => {
     }
     variationsArrowBox.parentElement.classList.remove('dark') // REMOVE
     mapArrowBox.parentElement.classList.remove('dark') // REMOVE
-
-    if (genNewPuzzle) {
-        queuedPuzzleData = null;
-        newPuzzle()
-        genNewPuzzle = false
-    }
 })
-header.addEventListener('click', () => menuBackground.click())
-document.body.append(menuBackground)
 
 settingsIcon.addEventListener('click', (e) => {
     if (wildPickerContainer.classList.contains('shown')) {
@@ -3067,48 +3307,22 @@ settingsIcon.addEventListener('click', (e) => {
     }
     e.stopPropagation()
     hideKeyboard()
-    settingsContainer.classList.toggle('shown')
-    menuBackground.classList.toggle('shown')
-    header.classList.toggle('dark')
-    if (!settingsContainer.classList.contains('shown') && settingsNodesContainer.classList.contains('page-2')) {
-        setTimeout(() => {
-            settingsNodesContainer.classList.remove('page-2')
-            settingsHeaderText.innerText = 'Settings'
-        }, 150)
-    }
-    variationsArrowBox.parentElement.classList.toggle('dark') // REMOVE
-    mapArrowBox.parentElement.classList.toggle('dark') // REMOVE
-
-    if (genNewPuzzle && !settingsContainer.classList.contains('shown')) {
-        queuedPuzzleData = null;
-        newPuzzle()
-        genNewPuzzle = false
+    if (!settingsContainer.classList.contains('shown')) {
+        settingsContainer.classList.add('shown')
+        menuBackground.classList.add('shown')
+        variationsArrowBox.parentElement.classList.add('dark') // Remove
+        mapArrowBox.parentElement.classList.add('dark')
+        header.classList.add('dark')
+        if (!settingsContainer.classList.contains('shown') && settingsNodesContainer.classList.contains('page-2')) {
+            setTimeout(() => {
+                settingsNodesContainer.classList.remove('page-2')
+                settingsHeaderText.innerText = 'Settings'
+            }, 150)
+        }
+    } else {
+        menuBackground.click()
     }
 });
-settingsContainer.addEventListener('click', (e) => e.stopPropagation())
-let headerText = 'Settings'
-const settingsNodesContainer = document.querySelector('#settings-nodes-container')
-const settingsHeader = document.querySelector('#settings-header')
-const settingsHeaderText = document.querySelector('#settings-header h4')
-const settingsNavButton = document.querySelector('#settings-nav-button')
-
-settingsNavButton.addEventListener('click', () => {
-    if (headerText === 'Settings') {
-        menuBackground.click()
-        return;
-    }
-    settingsNodesContainer.classList.remove('page-2')
-    settingsHeaderText.classList.add('fade')
-    settingsNavButton.classList.add('fade')
-    headerText = 'Settings'
-})
-settingsNavButton.addEventListener('transitionend', () => {
-    settingsNavButton.classList.remove('fade')
-})
-settingsHeaderText.addEventListener('transitionend', () => {
-    settingsHeaderText.innerText = headerText;
-    settingsHeaderText.classList.remove('fade')
-})
 
 function switchPage(activePage, title) {
     settingsNodesContainer.classList.add('page-2')
@@ -3116,120 +3330,208 @@ function switchPage(activePage, title) {
     settingsNavButton.classList.add('fade')
     for (let node of document.querySelectorAll('.settings-page-2.active')) node.classList.remove('active')
     activePage.classList.add('active')
-    headerText = title
+    settings.headerText = title
 }
+function createCategory(buttonID, pageID, title) {
+    const button = document.createElement('li')
+    button.id = buttonID
+    button.classList.add('settings-category')
+    button.innerText = title
 
-function createPage(buttonID, pageID, title) {
-    const button = document.querySelector(buttonID)
     const page = document.querySelector(pageID)
     button.addEventListener('click', () => {switchPage(page, title)})
+    return button
 }
+function createToggle(label, action) {
 
-const pages = [
-    // ['#card-view-button', '#settings-card-view', 'Card View (Testing)'],
-    ['#variations-button', '#settings-variations', 'Variations'],
-]
+    const toggleContainer = document.createElement('li')
+    toggleContainer.classList.add('settings-toggle')
+    const toggleLabel = document.createElement('p')
+    toggleLabel.innerText = label
+    toggleContainer.append(toggleLabel)
 
-for (let page of pages) createPage(...page)
+    const toggle = document.createElement('div')
+    toggle.classList.add('toggle')
+    toggleContainer.append(toggle)
+    const toggleSwitch = document.createElement('div')
+    toggleSwitch.classList.add('toggle-switch')
+    toggle.append(toggleSwitch)
 
+    toggle.addEventListener('click', () => action(toggle))
 
-const settingsToggles = document.querySelectorAll('.settings-toggle .toggle, .settings-checkbox')
-for (let toggle of settingsToggles) toggle.addEventListener('click', toggleSetting)
+    return toggleContainer;
+}
+function createCounter(label, id, action, parameters = {}) {
+    const counter = document.createElement('li');
+    counter.classList.add('settings-counter');
+    const counterLabel = document.createElement('label');
+    counterLabel.innerText = label;
+    counterLabel.for = id;
+    const counterInput = document.createElement('input');
+    counterInput.id = id;
 
-function toggleSetting(e) {
-    // console.log(this)
-    // console.log(e)
-    genNewPuzzle = true;
-    switch (this.dataset.type) {
-        case 'force-symmetric-difference':
-            this.classList.toggle('active')
-            puzzleParamaters.forceSymmetricDifference = !puzzleParamaters.forceSymmetricDifference
-            if (symmetricDifferenceCheck.classList.contains('active')) {
-                if (!this.classList.contains('active')) {
-                    symmetricDifferenceCheck.classList.remove('active')
-                    puzzleParamaters.setVariations = deleteFirstArrItem(puzzleParamaters.setVariations, 'symmetricDifference')
-                };
-                console.log(puzzleParamaters)
-                return;
-            }
-            if (this.classList.contains('active')) {
-                if (puzzleParamaters.setVariations.length === 6) variationCount.value = parseFloat(variationCount.value) + 1
-                symmetricDifferenceCheck.classList.add('active')
-                puzzleParamaters.setVariations.push('symmetricDifference')
-            }
-            console.log(puzzleParamaters)
-        break;
-        case 'required-cube': forceVariation(this, 'requiredCube'); break;
-        case 'wild-cube': forceVariation(this, 'wild'); break;
-        case 'two-operations': forceVariation(this, 'twoOp'); break;
-        // case 'shift-permitted': forceVariation(this, 'shiftPermitted'); break;
-        case 'no-null': forceVariation(this, 'noNull'); break;
-        case 'absolute-value': forceVariation(this, 'absValue'); break;
-        case 'double-set': forceVariation(this, 'double'); break;
-        case 'required-card': forceVariation(this, 'requiredCard'); break;
-        case 'forbidden-card': forceVariation(this, 'forbiddenCard'); break;
-        case 'blank-wild': forceVariation(this, 'blankWild'); break;
-        case 'symmetric-difference': forceVariation(this, 'symmetricDifference'); break;
-        case 'two-solutions': forceVariation(this, 'twoSolutions'); break;
+    setInputFilter(counterInput, function(value) {return parameters.regex.test(value)});
+    counterInput.value = parameters.value;
+    counterInput.maxValue = parameters.maxValue;
+
+    const arrowUpDiv = document.createElement('div');
+    const arrowDownDiv = document.createElement('div');
+    const arrowUp = document.createElement('div');
+    const arrowDown = document.createElement('div');
+    arrowUpDiv.classList.add('container-arrow-up');
+    arrowDownDiv.classList.add('container-arrow-down');
+    arrowUp.classList.add('counter-arrow-up');
+    arrowDown.classList.add('counter-arrow-down');
+    arrowUpDiv.append(arrowUp);
+    arrowDownDiv.append(arrowDown);
+    arrowUpDiv.addEventListener('click', () => action(1));
+    arrowDownDiv.addEventListener('click', () => action(-1));
+
+    counter.append(counterLabel, counterInput, arrowUpDiv, arrowDownDiv);
+    return counter;
+}
+function createCheckbox(text, type) {
+    const checkBox = document.createElement('li');
+    checkBox.classList.add('settings-checkbox');
+    checkBox.innerHTML = text;
+    checkBox.addEventListener('click', () => forceVariation(checkBox, type));
+    return checkBox;
+}
+(function createPages() {
+    
+    
+    // Variations Page
+    const settingsVariations = document.createElement('div')
+    settingsVariations.id = 'settings-variations'
+    settingsVariations.classList.add('settings-page-2')
+    const scrollContainer = document.createElement('div')
+    scrollContainer.classList.add('scroll-container')
+    settingsVariations.append(scrollContainer)
+    settingsNodesContainer.append(settingsVariations)
+
+    
+    const variationCounterList = document.createElement('ul')
+    scrollContainer.append(variationCounterList)
+    const variationsCounter = createCounter('Number of Variations:', 'variation-count', function(increment) {
+        let newVal = parseFloat(variationCount.value) + increment
+        let activeCount = document.querySelectorAll('.settings-checkbox.active').length
+        if (newVal > 6 || newVal < activeCount) return;
+        variationCount.value = newVal
+    },
+    {regex: /[^0-6]/, value: 6, maxLength: 1})
+    variationCounterList.append(variationsCounter)
+
+    const variationLabel = document.createElement('div')
+    variationLabel.classList.add('settings-label')
+    variationLabel.innerText = 'Choose variations to always appear'
+    scrollContainer.append(variationLabel)
+
+    const forceVariationsList = document.createElement('ul')
+    forceVariationsList.classList.add('force-variations')
+    scrollContainer.append(forceVariationsList)
+
+    let variationsArr = [['requiredCube', 'Required Cube'], ['wild', 'Wild'], ['twoOp', 'Two Operations',], 
+    ['noNull', 'No Null Restrictions'], ['absValue', 'Absolute Value'], ['double', 'Double Set'], 
+    ['requiredCard', 'Required Card'], ['forbiddenCard', 'Forbidden Card'], ['blankWild', 'Blank Card Wild'], 
+    ['symmetricDifference', 'Symmetric Difference'], ['twoSolutions', 'Two Solutions']]
+    
+    for (let variation of variationsArr) {
+        const checkboxNode = createCheckbox(variation[1], variation[0])
+        forceVariationsList.append(checkboxNode)
     }
-}
+    
+    // Main Page
+    const mainPage = document.createElement('ul')
+    mainPage.classList.add('settings-page-1')
+
+    const pages = [
+        // ['#card-view-button', '#settings-card-view', 'Card View (Testing)'],
+        ['#variations-button', '#settings-variations', 'Variations'],
+    ]
+    for (let page of pages) {
+        console.log("D")
+        const newCategory = createCategory(...page)
+        console.log(newCategory)
+        mainPage.append(newCategory)
+    }
+    settingsNodesContainer.append(mainPage)
+
+    const symmetricDifferenceToggle = createToggle('Force Symmetric Difference', (element) => {
+
+        settings.forceSymmetricDifference = !settings.forceSymmetricDifference
+        if (!element.classList.contains('active')) {
+            if (settings.forceVariations.length >= variationCount.value) {
+                notify('Too many variations!', 'red', 'bounce', 1500, '40px', '180px');
+                return
+            }
+            settings.forceSymmetricDifference = true
+            // if (settings.forceVariations.length === 6) variationCount.value = parseFloat(variationCount.value) + 1
+            symmetricDifferenceCheck.classList.add('active')
+            settings.forceVariations.push('symmetricDifference')
+        } else if (symmetricDifferenceCheck.classList.contains('active')) {
+            symmetricDifferenceCheck.classList.remove('active')
+            settings.forceVariations = deleteFirstArrItem(settings.forceVariations, 'symmetricDifference')
+        }
+        element.classList.toggle('active')
+        console.log(puzzleParameters)
+    })
+    symmetricDifferenceToggle.id = 'force-symmetric-difference'
+    mainPage.append(symmetricDifferenceToggle)
+    
+})();
+
+const variationCount = document.querySelector('#variation-count')
+
+// function toggleSetting(e) {
+//     // console.log(this)
+//     // console.log(e)
+//     genNewPuzzle = true;
+//     switch (this.dataset.type) {
+//         case 'force-symmetric-difference':
+//             this.classList.toggle('active')
+//             puzzleParameters.forceSymmetricDifference = !puzzleParameters.forceSymmetricDifference
+//             if (symmetricDifferenceCheck.classList.contains('active')) {
+//                 if (!this.classList.contains('active')) {
+//                     symmetricDifferenceCheck.classList.remove('active')
+//                     puzzleParameters.setVariations = deleteFirstArrItem(puzzleParameters.setVariations, 'symmetricDifference')
+//                 };
+//                 console.log(puzzleParameters)
+//                 return;
+//             }
+//             if (this.classList.contains('active')) {
+//                 if (puzzleParameters.setVariations.length === 6) variationCount.value = parseFloat(variationCount.value) + 1
+//                 symmetricDifferenceCheck.classList.add('active')
+//                 puzzleParameters.setVariations.push('symmetricDifference')
+//             }
+//             console.log(puzzleParameters)
+//         break;
+//     }
+// }
 
 function forceVariation(element, variation) {
-    if (element.parentElement.dataset.type === 'force-variations') {
-        if (!element.classList.contains('active') && puzzleParamaters.setVariations.length >= variationCount.value) return;
-        if (!element.classList.contains('active')) {
-            if (variation === 'requiredCard' && forbiddenCheck.classList.contains('active')) forceVariation(forbiddenCheck, 'forbiddenCard')
-            if (variation === 'forbiddenCard' && requiredCheck.classList.contains('active')) forceVariation(requiredCheck, 'requiredCard')
-            puzzleParamaters.setVariations.push(variation)
-        } else {
-            if (element === symmetricDifferenceCheck && puzzleParamaters.forceSymmetricDifference) {
-                forceSymmetricDifference.classList.remove('active')
-                puzzleParamaters.forceSymmetricDifference = !puzzleParamaters.forceSymmetricDifference
-            }
-            puzzleParamaters.setVariations = deleteFirstArrItem(puzzleParamaters.setVariations, variation)
+    console.log("D")
+    if (!element.classList.contains('active')) {
+        if (settings.forceVariations.length >= variationCount.value) return
+        if (variation === 'requiredCard' && forbiddenCheck.classList.contains('active')) forceVariation(forbiddenCheck, 'forbiddenCard')
+        if (variation === 'forbiddenCard' && requiredCheck.classList.contains('active')) forceVariation(requiredCheck, 'requiredCard')
+        settings.forceVariations.push(variation)
+    } else {
+        if (element === symmetricDifferenceCheck && puzzleParameters.forceSymmetricDifference) {
+            forceSymmetricDifference.classList.remove('active')
+            settings.forceSymmetricDifference = false
         }
+        settings.forceVariations = deleteFirstArrItem(settings.forceVariations, variation)
     }
-    console.log(puzzleParamaters)
     element.classList.toggle('active')
 }
 
-const variationCount = document.querySelector('#variation-count')
-const settingsUpArrow = document.querySelector('#settings-nodes-container .arrow-container-up')
-const settingsDownArrow = document.querySelector('#settings-nodes-container .arrow-container-down')
-
-const forceSymmetricDifference = document.querySelector('#force-symmetric-difference')
+const forceSymmetricDifference = document.querySelector('#force-symmetric-difference .toggle')
 const requiredCheck = document.querySelectorAll(".settings-checkbox")[6]
 const forbiddenCheck = document.querySelectorAll(".settings-checkbox")[7]
 const symmetricDifferenceCheck = document.querySelectorAll(".settings-checkbox")[9]
 
-settingsUpArrow.addEventListener('click', () => {incrementVariationCount(1)})
-settingsDownArrow.addEventListener('click', () => {incrementVariationCount(-1)})
 
-function incrementVariationCount(increment) {
-    genNewPuzzle = true;
-    let newVal = parseFloat(variationCount.value) + increment
-    let activeCount = document.querySelectorAll('.settings-checkbox.active').length
-    if (newVal > 6 || newVal < activeCount) return;
-    variationCount.value = newVal
-    puzzleParamaters.setVariationsLength = newVal
-}
-
-// const testDiv = document.createElement('div')
-// testDiv.classList.add('test-div')
-// testDiv.style.cssText = "width: 100px; height: 100px; border: 1px solid black;"
-// document.body.append(testDiv.cloneNode())
-// document.body.append(testDiv.cloneNode())
-// let testDivs = document.querySelectorAll('.test-div')
-// for (let node of testDivs) {
-//     console.log(node)
-//     node.addEventListener('mouseover', function(){
-//         this.style.backgroundColor = 'green'
-//     })
-//     node.addEventListener('mouseout', function(){
-//         this.style.backgroundColor = 'white'
-//     })
-// }
-
+// Wild
 const wildPickerContainer = document.querySelector('#wild-picker-container')
 wildPickerContainer.addEventListener('click', setWildCube)
 const wildPickerContainerBox = wildPickerContainer.getBoundingClientRect()
@@ -3352,6 +3654,7 @@ function changeWildStyle(style) {
             }`; return true;
     }
 }
+
 // wildStylesElement.innerHTML = '#puzzle-container .wild-cube { background-color: white; }'
 // wildStylesSheet.insertRule('.wild-cube { background-color: white; }', wildStylesSheet.cssRules.length)
 // wildStylesSheet.insertRule('.wild-cube { background-color: white }', 0);
