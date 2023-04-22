@@ -389,7 +389,6 @@ puzzleParameters = {
     setForbidden: null,
     forceSymmetricDifference: false,
 }
-puzzleParameters.setUniverse = ["BRGY","BRG","BRY","BR","BGY","BG","BY","B","RGY","RG","RY","R","GY","G","Y",""]
 
 // NEW PUZZLE
 function newPuzzle() {
