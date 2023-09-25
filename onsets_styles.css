@@ -211,29 +211,24 @@ header h1 {
 .settings-page-2.active {
     display: block;
 }
-.settings-page-2 > div.card.double {
-    translate: 0% 50%;
-    margin: auto;
-    height: 116px;
-    width: 75px;
+#settings-nodes-container li:first-of-type {
+    border-top: 1px solid #dadada;
 }
-
 #settings-nodes-container li {
-    margin: 8px 0;
+    /* margin: 8px 0; */
     background-color: whitesmoke;
     width: 100%;
     height: 48px;
     padding-left: 10px;
-    border-top: 1px solid #dadada;
     border-bottom: 1px solid #dadada;
     display: flex;
     align-items: center;
     transition: background-color 50ms
 }
 
-#settings-nodes-container li.settings-category {cursor: pointer}
-#settings-nodes-container li.settings-category:hover {background-color: rgb(239, 239, 239);}
-#settings-nodes-container li.settings-category::after {
+#settings-nodes-container li.settings-page {cursor: pointer}
+#settings-nodes-container li.settings-page:hover {background-color: rgb(239, 239, 239);}
+#settings-nodes-container li.settings-page::after {
     content: "";
     display: block;
     position: absolute;
@@ -272,10 +267,6 @@ header h1 {
 }
 .toggle.active {background-color: rgb(90, 227, 97);}
 .toggle.active .toggle-switch {left: 22px;}
-#settings-nodes-container .settings-checkbox:first-of-type {
-    border-top: 1px solid #dadada;
-    margin-top: 2px;
-}
 #settings-nodes-container .settings-label {
     margin-top: 16px;
     font-size: 13px;
@@ -311,13 +302,10 @@ header h1 {
     border-radius: 8px; overflow-y: scroll;
     padding: 10px 0 20px 0 !important;
 }
-#settings-variations {
-    overflow: hidden;
-}
 #settings-nodes-container .settings-counter {
     position: relative;
     height: 62px;
-}
+}   
 .settings-counter input {
     width: 30px;
     height: 28px;
@@ -830,15 +818,6 @@ header h1 {
 .goal-row.align-left{
     margin: 0;
 }
-/* #goal-container:hover {
-    background-color: rgb(71, 17, 34);
-    transition-duration: 0s;
-}
-
-#goal-container:active {
-    background-color: rgb(62, 15, 30);
-} */
-
 .goal-cube {
     color: rgb(34, 136, 87);
     font-size: 32px;
@@ -886,7 +865,7 @@ header h1 {
     border-radius: 5px;
     background-color:rgb(66, 173, 100);
     bottom: -20px;
-    box-shadow: 3px 3px 4px rgb(0 0 0 / 20%);;
+    box-shadow: 3px 3px 4px rgb(0 0 0 / 20%);
     font-size: 1em;
     color: white;
     cursor: pointer;
@@ -900,14 +879,188 @@ header h1 {
 #submit-button:hover {background-color:rgb(64, 157, 94)}
 #submit-button:active {background-color:rgb(61, 149, 89)}
 
-#cards-container {
+#universe-container {
+    background-color: rgb(237, 237, 237);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 20%);
     display: flex;
-    flex-wrap: wrap;
-    width: min(80%, 648px);
-    margin: 5px auto;
-    margin-top: 100px;
+    width: min(100%, 658px);
+    height: 302px;
+    margin: 100px auto 15px;
+    flex-direction: column;
 }
 
+#universe-header {
+    display: flex;
+    background-color: transparent;
+    border-radius: 10px 10px 0 0;
+    width: 100%;
+    height: 40px;
+    border-bottom: 1px solid #dadada;
+    justify-content: center;
+}
+
+#universe-header-toggle {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    height: 28px;
+    width: 158px;
+    background-color:rgb(225, 225, 225);
+    margin: 5px 5px 5px auto;
+    box-shadow: 0 2px 2px rgb(0 0 0 / 10%);
+}
+#universe-map-toggle, #universe-cards-toggle {
+    font-size: 14px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    z-index: 1;
+    width: 76px;
+    user-select: none;
+    /* color: rgb(0 0 0 / 50%) */
+}
+#universe-toggle-div {
+    position: absolute;
+    height: 28px;
+    width: 76px;
+    left: 0;
+    border-radius: 8px;
+    background-color: rgb(215, 215, 215);
+    transition: cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.14s left;
+}
+#universe-toggle-div.move {left: calc(100% - 76px);}
+#universe-map-toolbox {
+    display: none;
+    position: absolute;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    height: 28px;
+    width: 168px;
+    background-color:rgb(225, 225, 225);
+    margin: 5px auto;
+    box-shadow: 0 2px 2px rgb(0 0 0 / 10%);
+}
+.universe-map-tool {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    height: 28px;
+    z-index: 1;
+    width: 28px;
+    user-select: none;
+    border-radius: 8px;
+}
+.universe-map-tool:not(.active):hover {
+    background-color: rgb(214, 214, 214);
+}
+.universe-map-tool:not(.active):active {
+    background-color: rgb(210, 210, 210);
+}
+.universe-map-tool.active {
+    background-color: rgb(210, 210, 210);
+}
+#map-container {
+    opacity: 0;
+    display: flex;
+    margin: auto;
+    justify-content: center;
+}
+.map {
+    width: 282px;
+    background-color: whitesmoke;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+    border-radius: 8px;
+    z-index: 3;
+    user-select: none;
+}
+.map-table {
+    margin: 20px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+.map-table .blackout {
+    background-color: rgba(0, 0, 0, 0.85);
+}
+.map-table .horizontal-table-heading {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+.map-table .vertical-table-heading {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.map-table td {
+    height: 50px;
+    width: 50px;
+    vertical-align: top;
+    border: 1px solid black;
+    background-color: whitesmoke;
+    line-height: 11px;
+    font-size: 11px;
+    font-weight: 550;
+    height: 50px;
+    position: relative;
+}
+.map-table td:not(.blackout):hover {
+    cursor: pointer;
+    background-color: rgb(233, 233, 233)
+}
+.map-table td:not(.blackout).map-shade:hover {
+    background-color: rgb(190, 190, 190)
+}
+.map-table td.map-cross {
+    background: linear-gradient(to bottom right, transparent 48%, rgb(0 0 0 / 70%) 48%, rgb(0 0 0 / 70%) 52%, transparent 52%);
+}
+.map-table .map-double {
+    position: absolute;
+    right: 4px;
+    bottom: 2px;
+    font-size: 16px;
+}
+.map-table .map-star {
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    right: 1px;
+    bottom: 30px;
+}
+.map-table .map-x {
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    right: -1px;
+    bottom: 12px;
+}
+.map-table .map-circle {
+    position: absolute;
+    border: 2px solid rgb(0 0 0 / 70%);
+    height: 49px;
+    width: 49px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 100%;
+}
+.map-table td.map-shade {
+    background-color: rgb(190, 190, 190)
+}
+#cards-container {
+    display: grid;
+    flex-wrap: wrap;
+    grid-template-columns: repeat(auto-fill, 88px);
+    grid-template-rows: repeat(auto-fill, 126px);
+    justify-content: center;
+    width: min(95%, 616px);
+    padding: 0 0;
+    margin: 5px auto;
+}
 .card {
     display: flex;
     border-radius: 10px;
@@ -918,7 +1071,6 @@ header h1 {
     width: 78px;
     /* perspective: 900px; */
 }
-
 .card-content {
     display: flex;
     transition: transform .27s ease 30ms;
@@ -944,7 +1096,6 @@ header h1 {
     backface-visibility: hidden;
     z-index: 2;
 }
-
 .double .card-content-front {
     height: 113px;
     width: 75px;
@@ -952,14 +1103,12 @@ header h1 {
     border-radius: 8px;
     /* display: none; */
 }
-
 @media (max-resolution: 100dpi) {
     .double .card-content-front {
         height: 112px;
         width: 74px;
     }
 }
-
 .double .card-border {
     position: absolute;
     height: 116px;
@@ -974,7 +1123,6 @@ header h1 {
     backface-visibility: hidden;
     animation: border-shine 8s linear infinite;
 }
-
 @keyframes border-shine {
     30% {
         background-position: top right;
@@ -986,7 +1134,6 @@ header h1 {
         background-position: bottom left;
     }
 }
-
 .card-content-back {
     position: absolute;
     height: 116px;
@@ -1001,7 +1148,7 @@ header h1 {
 .card.flip .card-content {transform: rotateX(-180deg);}
 
 .card:hover {filter: brightness(98%)}
-.card.flip:hover {filter: brightness(92%)}
+.card:hover .card-content-back {filter: brightness(93%)}
 
 .card-content-front .blue, .card-content-front .red, .card-content-front .green, .card-content-front .yellow {
     position: absolute;
@@ -1082,87 +1229,13 @@ header h1 {
         -2px 2px 6px var(--blue);
     }
 }
-
-td {
-    height: 50px;
-    width: 50px;
-    vertical-align: top;
-    border: 1px solid black;
-    background-color: rgba(0, 0, 0, 0.85);
-    line-height: 11px;
-    font-size: 11px;
-    font-weight: 550;
-}
-#map-view-container {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    position: fixed;
-    left: 0;
-    top: 15%;
-    translate: -277px;
-    transition: cubic-bezier(0.075, 0.82, 0.165, 1) 0.6s
-}
-#map-view-container.shown {
-    translate: 0;
-}
-/* #map-view-container:hover {
-    translate: 0;
-} */
-#map-container {
-    background-color: whitesmoke;
-    box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
-    border-radius: 0 8px 8px 0;
-    z-index: 3;
-}
-#map {
-    margin: 20px;
-    table-layout: fixed;
-    border-collapse: collapse;
-}
-#map .whitebg {
-    background-color: whitesmoke;
-}
-
-#map td {
-    position: relative;
-    width: 50px;
-    height: 50px;
-    overflow: hidden;
-}
-
-#map td:hover.whitebg {
-    background-color: rgb(219, 219, 219)
-}
-
-#map td.strike-through::before {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 25px;
-    top: -13px;
-    height: 73px;
-    width: 1.2px;
-    transform: rotate(45deg);
-    background-color: black;
-}
-
-.horizontal-table-heading {
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-}
-
-.vertical-table-heading {
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
-}
 #variations-view-container {
     position: relative;
     z-index: 10;
     display: flex;
     position: fixed;
     left: 0;
-    top: 55%;
+    top: 35%;
     translate: -200px;
     transition: cubic-bezier(0.075, 0.82, 0.165, 1) 0.6s;
 }
@@ -1175,7 +1248,7 @@ td {
     height: 230px;
     width: 200px;
     background-color: whitesmoke;
-    box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
     border-radius: 0 8px 8px 0;
 }
 #variations-container ul {
@@ -1184,7 +1257,7 @@ td {
     line-height: 25px;
     list-style-type: none;
 }
-#variations-arrow-box, #map-arrow-box {
+#variations-arrow-box {
     opacity: 0;
     position: absolute;
     line-height: 110px;
@@ -1195,22 +1268,22 @@ td {
     border-radius: 0 5px 5px 0;
     align-self: center;
     background-color: whitesmoke;
-    box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
     z-index: 2;
     cursor: pointer;
     transition: background-color 0.08s ease, opacity 0.5s cubic-bezier(.4,0,.2,1);
 }
-#variations-arrow-box.shown, #map-arrow-box.shown {
+#variations-arrow-box.shown {
     opacity: 1;
 }
-#map-view-container, #variations-view-container {
+#variations-view-container {
     transition: translate cubic-bezier(0.075, 0.82, 0.165, 1) 0.6s, filter 0.25s cubic-bezier(.4,0,.2,1);
 }
-#variations-view-container.dark, #map-view-container.dark {
+#variations-view-container.dark {
     filter: brightness(92%)
 }
 
-#variations-arrow-box:hover, #map-arrow-box:hover {
+#variations-arrow-box:hover {
     background-color: rgb(239, 239, 239);
 }
 
@@ -1401,6 +1474,7 @@ td {
     text-align: center;
     z-index: 8;
     width: 90px;
+    user-select: none;
 }
 
 .answer-toggle-div {
@@ -1573,9 +1647,6 @@ td {
 }
 
 @media screen and (max-height: 450px) {
-    #map-view-container {
-        top: 8%;
-    }
     #variations-view-container {
         top: 45%;
     }

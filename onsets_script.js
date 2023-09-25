@@ -101,6 +101,144 @@ function addColorChild(card, color) {
 function randomArrayValue(arr) {
     return arr[getRandomNumber(0, arr.length - 1)]
 };
+function createMapTable() {
+    // Create table and its elements
+    const table = document.createElement('table');
+    table.classList.add("map-table");
+
+    // Data for table
+    const columns = [
+        [[''], ['R', 2], ["R'", 2]],
+        [['B', 2], 'B<br>R', 'B<br>R<br><br>Y', 'B<br><br><br>Y', 'B', ["G'", 1]],
+        ['B<br>R<br>G', 'B<br>R<br>G<br>Y', 'B<br><br>G<br>Y', 'B<br><br>G', ['G', 2]],
+        [["B'", 2], '<br>R<br>G', '<br>R<br>G<br>Y', '<br><br>G<br>Y', '<br><br>G'],
+        ['<br>R', '<br>R<br><br>Y', '<br><br><br>Y', '', ['G', 1]],
+        [[''], ["Y'", 1], ['Y', 2], ["Y'", 1]]
+    ];
+
+    // Populate table with data
+    columns.forEach((row, rowIndex) => {
+        const tr = document.createElement('tr');
+
+        row.forEach((cell, cellIndex) => {
+            let element;
+            if (typeof cell === 'string') {
+                element = document.createElement('td');
+                element.innerHTML = cell;
+            } else {
+                element = document.createElement('th');
+                element.innerHTML = cell[0];
+                if (!cell[0].length) {
+                } else if (rowIndex === 5 || rowIndex === 0) {
+                    element.colSpan = cell[1];
+                    element.classList.add("horizontal-table-heading");
+                } else if (cellIndex === 0 || cellIndex === row.length - 1) {
+                    element.rowSpan = cell[1];
+                    element.classList.add("vertical-table-heading");
+                }
+            }
+
+            tr.append(element);
+        });
+
+        table.append(tr);
+    });
+    
+    // Format the data
+    const mapArr = table.querySelectorAll("td")
+    let nullSet = ["BRGY","BRG","BRY","BR","BGY","BG","BY","B","RGY","RG","RY","R","GY","G","Y",""].filter(val => !puzzleData.universe.includes(val));
+    for (let card of nullSet) {
+        switch (card) {
+            case "BR": mapArr[0].classList.add('blackout'); break;
+            case "BRY": mapArr[1].classList.add('blackout'); break;
+            case "BY": mapArr[2].classList.add('blackout'); break;
+            case "B": mapArr[3].classList.add('blackout'); break;
+            case "BRG": mapArr[4].classList.add('blackout'); break;
+            case "BRGY": mapArr[5].classList.add('blackout'); break;
+            case "BGY": mapArr[6].classList.add('blackout'); break;
+            case "BG": mapArr[7].classList.add('blackout'); break;
+            case "RG": mapArr[8].classList.add('blackout'); break;
+            case "RGY": mapArr[9].classList.add('blackout'); break;
+            case "GY": mapArr[10].classList.add('blackout'); break;
+            case "G": mapArr[11].classList.add('blackout'); break;
+            case "R": mapArr[12].classList.add('blackout'); break;
+            case "RY": mapArr[13].classList.add('blackout'); break;
+            case "Y": mapArr[14].classList.add('blackout'); break;
+            case "": mapArr[15].classList.add('blackout'); break;
+        }
+    }
+    for (let cell of mapArr) {
+        if (cell.classList.contains('blackout')) continue;
+        cell.addEventListener('click', function() {
+            const activeTool = universeMapToolbox.querySelector('.active')
+            let activeToolID = activeTool.dataset.id
+            switch (activeToolID) {
+                case '0':
+                    this.classList.toggle('map-cross');
+                    break;
+                case '1':
+                    if (!this.classList.contains('double')) {
+                        const double = document.createElement('div')
+                        double.classList.add('map-double')
+                        double.innerText = '2'
+                        this.append(double)
+                    } else {
+                        const double = this.querySelector('.map-double')
+                        double.remove()
+                    }
+                    this.classList.toggle('double');
+                    break;
+                case '2':
+                    if (!this.classList.contains('star')) {
+                        const star = document.createElement('div')
+                        star.classList.add('map-star')
+                        const starSvg = createSvg('star')
+                        star.append(starSvg)
+                        this.append(star)
+                    } else {
+                        const star = this.querySelector('.map-star')
+                        star.remove()
+                    }
+                    this.classList.toggle('star');
+                    break;
+                case '3':
+                    if (!this.classList.contains('x')) {
+                        const x = document.createElement('div')
+                        x.classList.add('map-x')
+                        const xSvg = createSvg('x')
+                        x.append(xSvg)
+                        this.append(x)
+                    } else {
+                        const x = this.querySelector('.map-x')
+                        x.remove()
+                    }
+                    this.classList.toggle('x');
+                    break;
+                case '4':
+                    if (!this.classList.contains('circle')) {
+                        const circle = document.createElement('div')
+                        circle.classList.add('map-circle')
+                        this.append(circle)
+                    } else {
+                        const circle = this.querySelector('.map-circle')
+                        circle.remove()
+                    }
+                    this.classList.toggle('circle');
+                    break;
+                case '5':
+                    this.classList.toggle('map-shade');
+                    break;
+            }
+        })
+
+    }
+    // Append table to container
+    const container = document.createElement('div')
+    container.classList.add('map')
+    container.append(table);
+
+    return container;
+}
 function createSvg(type, parameters = {}) {
 
     // let customText = parameters.customText
@@ -170,6 +308,24 @@ function createSvg(type, parameters = {}) {
             svg.append(path1)
             svg.append(path2)
             return svg
+        case 'x':
+            svg.setAttribute('viewBox', "0 0 16 16")
+            svg.setAttribute('stroke', "currentColor")
+            svg.setAttribute('fill', "currentColor")
+            path1.setAttribute('d', `M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 
+            2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z`)
+            svg.append(path1)
+            return svg
+        case 'star':
+            svg.setAttribute('viewBox', "0 0 16 16")
+            svg.setAttribute('stroke', "currentColor")
+            svg.setAttribute('fill', "currentColor")
+            path1.setAttribute('d', `M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 
+            3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 
+            3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 
+            3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z`)
+            svg.append(path1)
+            return svg
     }
 }
 function compareArr(arr1, arr2) {
@@ -205,15 +361,11 @@ cursor.classList.add('blink-animation')
 const settingsIcon = createSvg('settings');
 settingsIcon.id = 'settings-ico'
 const header = document.querySelector('header')
-header.addEventListener('click', () => menuBackground.click())
+header.addEventListener('click', applySettings)
 header.append(settingsIcon)
 
 const variationsArrowBox = document.querySelector('#variations-arrow-box')
 variationsArrowBox.addEventListener('click', function() {
-    this.parentElement.classList.toggle('shown')
-})
-const mapArrowBox = document.querySelector('#map-arrow-box')
-mapArrowBox.addEventListener('click', function() {
     this.parentElement.classList.toggle('shown')
 })
 
@@ -230,7 +382,6 @@ let loadingInterval, loadTimer = 0;
 function showLoading() {
     variationsContainer.parentElement.classList.remove('shown')
     variationsArrowBox.classList.remove('shown')
-    mapArrowBox.classList.remove('shown')
     loading.classList.add('shown')
     let interval = 1000;
     loadingInterval = setInterval(() => {
@@ -255,7 +406,6 @@ function showLoading() {
 function hideLoading() {
     loadTimer = 0;
     variationsArrowBox.classList.add('shown')
-    mapArrowBox.classList.add('shown')
     loading.classList.remove('shown')
     const puzzleButton = document.querySelector('#new-puzzle-button')
     if (puzzleButton) {
@@ -284,7 +434,7 @@ function showNewPuzzleButton() {
         setTimeout(() => {newPuzzleButton.remove()}, 100)
     })
 }
-
+// ADD MIN AND MAX UNIVERSE
 // let puzzleParamaters = 
 // {
 //     randomize: 
@@ -315,7 +465,7 @@ function showNewPuzzleButton() {
 //     forceSymmetricDifference: true,
 // }
 
-// RESTRICTIONLESS PUZZLE
+// RESTRICTIONLESS PUZZLE ADD MIN AND MAX UNIVERSE
 // puzzleParamaters = 
 // {
 //     'randomize': 
@@ -346,45 +496,46 @@ function showNewPuzzleButton() {
 //     'forceSymmetricDifference': false,
 // }
 
-// puzzleParamaters = 
+// puzzleParameters = 
 // {
-//     'randomize': 
+//     randomize: 
 //         false,
-//     'setCubes': 
+//     setCubes: 
 //         [   
 //             ["B", "G", "Y", "B", "G", "Y"],
 //             [1, 3, 5],
 //             ["'", "'", "-"],
 //             ["<", "="]
 //         ],
-//     'setUniverse':
+//     setUniverse:
 //         ["BR", "BRY", "B", "BRG", "BRGY", "BGY", "BG", "RG", "RGY", "GY", "G", "RY", ''],
-//     'setVariations':
+//     minUniverse: 10,
+//     maxUniverse: 14,
+//     setVariations:
 //         ['double', 'twoSolutions', 'symmetricDifference', 'blankWild', 'noNull', 'requiredCard'],
-//     'setVariationsLength': 
+//     setVariationsLength: 
 //         6,
-//     'setGoal':
+//     setGoal:
 //         {
-//             'goalArr': [-1, "*", -2, "+", -1],
-//             'goalValues': [3],
-//             'goalShape': 6,
+//             goalArr: [-1, "*", -2, "+", -1],
+//             goalValues: [3],
+//             goalShape: 6,
 //         },
-//     'setForbidden':
+//     setForbidden:
 //         {
-//             'forbiddenArrLength': 0
+//             forbiddenArrLength: 0
 //         },
-//     'forceSymmetricDifference': false,
+//     forceSymmetricDifference: false,
 // }
 
 puzzleParameters = {
     randomize: true,
     setCubes: null,
     setUniverse: null,
+    minUniverse: 10,
+    maxUniverse: 14,
     setVariations: [],
-    // setVariations:
-    //     [ 'double', 'symmetricDifference'],
     setVariationsLength: 6,
-    // setVariationsLength: 2,
     setGoal: null,
     setForbidden: null,
     forceSymmetricDifference: false,
@@ -448,11 +599,8 @@ function newPuzzle() {
     resourcesContainer.innerHTML = ""
     cardsContainer.innerHTML = ""
     variationsContainer.querySelector('ul').innerHTML = ""
-    for (let cell of map.querySelectorAll("td")) {
-        cell.classList.remove('whitebg')
-    }
-    for (let x of mapArr) {
-        x.classList.remove('strike-through')
+    for (let map of mapContainer.children) {
+        map.remove()
     }
     for (let key of keyboardContainer.querySelectorAll('.wild-cube')) {
         key.classList.remove('wild-cube')
@@ -720,35 +868,10 @@ function newPuzzle() {
         console.log(filterDuplicates(puzzleData.universe))
 
         // Display Map
-        for (let cell of mapArr) {
-            if (!cell.dataset.hasStrikeThrough) {
-                cell.dataset.hasStrikeThrough = true;
-                cell.addEventListener('click', function() {
-                    this.classList.toggle('strike-through')
-                })
-            }
-        }
+        mapContainer.append(createMapTable())
 
         // Display Cards
         for (let card of filterDuplicates(puzzleData.universe)) {
-            switch (card) {
-                case "BR": mapArr[0].classList.add('whitebg'); break;
-                case "BRY": mapArr[1].classList.add('whitebg'); break;
-                case "BY": mapArr[2].classList.add('whitebg'); break;
-                case "B": mapArr[3].classList.add('whitebg'); break;
-                case "BRG": mapArr[4].classList.add('whitebg'); break;
-                case "BRGY": mapArr[5].classList.add('whitebg'); break;
-                case "BGY": mapArr[6].classList.add('whitebg'); break;
-                case "BG": mapArr[7].classList.add('whitebg'); break;
-                case "RG": mapArr[8].classList.add('whitebg'); break;
-                case "RGY": mapArr[9].classList.add('whitebg'); break;
-                case "GY": mapArr[10].classList.add('whitebg'); break;
-                case "G": mapArr[11].classList.add('whitebg'); break;
-                case "R": mapArr[12].classList.add('whitebg'); break;
-                case "RY": mapArr[13].classList.add('whitebg'); break;
-                case "Y": mapArr[14].classList.add('whitebg'); break;
-                case "": mapArr[15].classList.add('whitebg'); break;
-            }
             const newCard = document.createElement('div');
             newCard.dataset.getCard = card
             // newCard.addEventListener("click", hideKeyboard);
@@ -768,6 +891,14 @@ function newPuzzle() {
             newCard.addEventListener('click', function(){this.classList.toggle('flip')})
             cardsContainer.append(newCard)
         }
+        if (filterDuplicates(puzzleData.universe).length > 14) {
+            universeSize.cardsWidth = 704 + 52
+            universeSize.mapWidth = 756
+        } else {
+            universeSize.cardsWidth = 616 + 52
+            universeSize.mapWidth = 700
+        }
+        resizeUniverse()
 
         // Display Variations
         console.log(variationsContainer)
@@ -848,6 +979,18 @@ function newPuzzle() {
     };
 };
 
+// Elements that relate to Puzzle:
+function createElement(id, parent, innerText = '', attributes = []) {
+    const element = document.createElement('div')
+    element.id = id
+    element.innerText = innerText
+    for (let attribute of attributes) {
+        element.setAttribute(attribute[0], attribute[1])
+    }
+    parent.append(element)
+    return element
+}
+const puzzleContainer = document.querySelector('#puzzle-container')
 // Cube Containers
 const boardContainer = document.querySelector('#board-container')
 const forbiddenContainer = document.querySelector('#forbidden-container');
@@ -857,12 +1000,10 @@ const solutionContainer = document.querySelector('#solution-container');
 const restrictionContainer = document.querySelector('#restriction-container');
 const goalContainer = document.querySelector('#goal-container');
 // Misc. Puzzle Containers
-const cardsContainer = document.querySelector('#cards-container');
 const variationsContainer = document.querySelector('#variations-container')
-const map = document.querySelector('#map')
+const map = document.querySelector('.map')
 const blankWildContainer = document.querySelector('#blank-wild-container')
 const submitButton = document.querySelector('#submit-button');
-const mapArr = map.querySelectorAll("td")
 // Two Solutions Toggle
 const rightInputContainer = document.querySelector('#right-input-container')
 const solutionFormContainer = document.querySelector('#solution-form-container')
@@ -872,12 +1013,79 @@ const solutionFormToggleDiv = document.querySelector('#solution-form-toggle-div'
 // Keyboard
 const keyboardContainer = document.querySelector('#keyboard-container');
 const keyboardButtons = document.querySelectorAll(".keyboard-row > div")
-
+// Universe Container
+const universeContainer = document.querySelector('#universe-container')
+const universeHeader = createElement('universe-header', universeContainer)
+const universeHeaderToggle = createElement('universe-header-toggle', universeHeader)
+const universeCardsToggle = createElement('universe-cards-toggle', universeHeaderToggle, 'Cards', [['data-active', 'true']])
+const universeMapToggle = createElement('universe-map-toggle', universeHeaderToggle, 'Map', [['data-active', 'false']])
+const universeToggleDiv = createElement('universe-toggle-div', universeHeaderToggle)
+const cardsContainer = createElement('cards-container', universeContainer)
+const mapContainer = createElement('map-container', universeContainer)
+const universeMapToolbox = createElement('universe-map-toolbox', universeHeader)
+for (let i = 0; i < 6; i++) {
+    const universeMapTool = document.createElement('div')
+    universeMapTool.classList.add('universe-map-tool')
+    universeMapTool.dataset.id = i
+    universeMapTool.addEventListener('click', function() {
+        const active = universeMapToolbox.querySelector('.active')
+        active.classList.remove('active')
+        this.classList.add('active')
+    })
+    switch (i) {
+        case 0:
+            const cross = document.createElement('div')
+            cross.style.width = '16px'
+            cross.style.height = '16px'
+            cross.style.borderRadius = '2px'
+            cross.style.background = 'linear-gradient(to bottom right, transparent 42%, rgb(0 0 0 / 100%) 42%, rgb(0 0 0 / 100%) 58%, transparent 58%)'
+            universeMapTool.append(cross)
+            universeMapTool.classList.add('active')
+            break;
+        case 1:
+            universeMapTool.style.fontSize = '20px'
+            universeMapTool.style.fontWeight = 'bold'
+            const double = document.createElement('div')
+            double.style.paddingTop = '1px'
+            double.innerText = 2
+            universeMapTool.append(double)
+            break;
+        case 2:
+            const starSvg = createSvg('star')
+            starSvg.style.width = '17px'
+            starSvg.style.height = '17px'
+            universeMapTool.append(starSvg)
+            break;
+        case 3:
+            const xSvg = createSvg('x')
+            xSvg.style.width = '24px'
+            xSvg.style.height = '24px'
+            universeMapTool.append(xSvg)
+            break;
+        case 4:
+            const circle = document.createElement('div')
+            circle.style.width = '18px'
+            circle.style.height = '18px'
+            circle.style.borderRadius = '100%'
+            circle.style.border = '2.5px solid rgb(0 0 0 / 100%)'
+            universeMapTool.append(circle)
+            break;
+        case 5:
+            const shade = document.createElement('div')
+            shade.style.width = '18px'
+            shade.style.height = '18px'
+            shade.style.borderRadius = '4px'
+            shade.style.border = '2px solid rgb(0 0 0 / 100%)'
+            shade.style.backgroundColor = 'rgb(0 0 0 / 30%)'
+            universeMapTool.append(shade)
+            break;
+    }
+    universeMapToolbox.append(universeMapTool)
+}
 const workers = {
     mainWorker: null,
     queueWorker: null
 }
-
 const inputValues = {
     selectedCubeIndex: {
         setNameArr1: {row: 0, column: null},
@@ -918,6 +1126,39 @@ const inputValues = {
         solution2: null,
     }
 };
+const universeSize = {
+    cardsWidth: 616,
+    cardsHeight: 302,
+    mapWidth: 700,
+    mapHeight: 352,
+}
+window.onresize = resizeUniverse
+function resizeUniverse() {
+    // Cards
+    const UNIVERSE_HEADER_SIZE = 50
+    const SIDE_PADDING = 42
+    const CARD_HEIGHT = 126
+    const CARD_WIDTH = 88
+    const CARDS_CONTAINER_WIDTH = Math.min(window.innerWidth * .97 * .95, universeSize.cardsWidth - SIDE_PADDING)
+    let columns = Math.floor(CARDS_CONTAINER_WIDTH / CARD_WIDTH)
+    let rows = Math.ceil(cardsContainer.children.length / columns)
+    universeSize.cardsHeight = rows * CARD_HEIGHT + UNIVERSE_HEADER_SIZE
+    if (universeCardsToggle.dataset.active === 'true') {
+        universeContainer.animate(
+        [{ height: universeSize.cardsHeight + 'px' }], {
+            fill: 'forwards',
+        });
+        cardsContainer.animate(
+            [{ width: `min(95%, ${universeSize.cardsWidth - SIDE_PADDING}px`}], {
+            fill: 'forwards',
+        });
+        universeContainer.animate(
+            [{ width: `min(97%, ${universeSize.cardsWidth}px`}], {
+            fill: 'forwards',
+        });
+    }
+
+}
 let activeSolution = 'solution1';
 let keyboardActive = false;
 let currInput;
@@ -927,6 +1168,7 @@ let twoSolutions
 
 let puzzleData;
 let queuedPuzzleData
+// Start and Time Puzzle
 newPuzzle();
 let stopTimer = new Date(); console.log((stopTimer.getTime() - setTimer.getTime())/1000 + " SECONDS");
 console.log(' > DONE')
@@ -991,7 +1233,7 @@ function showKeyboard(e) {
         selectedCubeIndex.column = wrap.elements[wrap.row].length - 1
 
         alignCursor()
-        alignNodes()
+        alignInputNodes()
     }
 
     if (targetElement.classList.contains('active')) {
@@ -1120,7 +1362,7 @@ function showKeyboard(e) {
         }
 
         alignCursor([70, 70], frontCursor)
-        alignNodes()
+        alignInputNodes()
 
     } else if (target === 'restriction-container') {
 
@@ -1187,7 +1429,7 @@ function hideKeyboard() {
         cursorRow[0] = wrap.row
         selectedCubeIndex.column = wrap.elements[wrap.row].length - 1
         alignCursor()
-        alignNodes()
+        alignInputNodes()
     }
 
     cursor.classList.remove('blink-animation')
@@ -1289,9 +1531,9 @@ function toggleSolution(e) {
         }
         
         currInput = 'restriction2'
-        alignNodes()
+        alignInputNodes()
         currInput = 'setName2'
-        alignNodes()
+        alignInputNodes()
         currInput = 'null'
 
     } else {
@@ -1350,9 +1592,9 @@ function toggleSolution(e) {
         }
 
         currInput = 'restriction1'
-        alignNodes()
+        alignInputNodes()
         currInput = 'setName1'
-        alignNodes()
+        alignInputNodes()
         currInput = 'null'
 
     };
@@ -1550,7 +1792,7 @@ function inputCube(cube) {
     }
     solutionCube.dataset.symbol = currCube
 
-    // Give and remove hidden classlist for fade in effect
+    // Add and remove hidden classlist for fade in effect
     solutionCube.classList.add('hidden')
 
     if (checkInputWidth(cubeWidth, solutionCube)) {
@@ -1633,7 +1875,7 @@ function checkInputWidth(cubeWidth, element) {
                 } else {
                     // Case where cursor is at leftmost position on non-first row
                     
-                    let overflowData = stopOverflow(selectedCubeIndex.row)
+                    let overflowData = preventInputOverflow(selectedCubeIndex.row)
                     cursorAnimationDuration = overflowData[0]
                     nodeAnimationDuration = overflowData[1]
                     frontCursor = overflowData[2]
@@ -1664,7 +1906,7 @@ function checkInputWidth(cubeWidth, element) {
                     }
                     wrap.values[newRow] += cubeWidth
 
-                    let overflowData = stopOverflow(selectedCubeIndex.row)
+                    let overflowData = preventInputOverflow(selectedCubeIndex.row)
                     cursorAnimationDuration = overflowData[0]
                     nodeAnimationDuration = overflowData[1]
                     if (overflowData[2] !== null) frontCursor = overflowData[2]
@@ -1719,7 +1961,7 @@ function checkInputWidth(cubeWidth, element) {
 
             cursorRow[0]++
 
-            let overflowData = stopOverflow(selectedCubeIndex.row)
+            let overflowData = preventInputOverflow(selectedCubeIndex.row)
             cursorAnimationDuration = overflowData[0]
             nodeAnimationDuration = overflowData[1]
             if (overflowData[2] !== null) frontCursor = overflowData[2]
@@ -1832,7 +2074,7 @@ function checkInputWidth(cubeWidth, element) {
 
         }
 
-        let fillData = stopEmptySpace(selectedCubeIndex.row)
+        let fillData = fillEmptyInputSpace(selectedCubeIndex.row)
         cursorAnimationDuration = fillData[0]
         nodeAnimationDuration = fillData[1]
         if (fillData[2] !== null) frontCursor = fillData[2]
@@ -1844,17 +2086,17 @@ function checkInputWidth(cubeWidth, element) {
     // console.log(cursorRow)
 
     alignCursor(cursorAnimationDuration, frontCursor)
-    alignNodes(nodeAnimationDuration)
+    alignInputNodes(nodeAnimationDuration)
 
     return true;
 }
 
-window.onresize = () => {
-    alignNodes()
-    alignCursor()
-}
+// window.onresize = () => {
+//     alignNodes()
+//     alignCursor()
+// }
 
-function alignNodes(duration = 70, rows = []) {
+function alignInputNodes(duration = 70, rows = []) {
 
     let input, wrap
     switch (currInput) {
@@ -1902,7 +2144,7 @@ function alignNodes(duration = 70, rows = []) {
     };
 }
 
-function stopOverflow(startIndex) {
+function preventInputOverflow(startIndex) {
 
     let input, selectedCubeIndex, wrap, cursorRow
     switch (currInput) {
@@ -1985,16 +2227,16 @@ function stopOverflow(startIndex) {
                     for (let node of wrap.elements[cursorRow[0]]) { node.dataset.cursorOffset = 6 }
                     nodeAnimationDuration = 100
                 };
-            }
+            };
 
-        }
-    }
+        };
+    };
 
     return [cursorAnimationDuration, nodeAnimationDuration, frontCursor]
 
-}
+};
 
-function stopEmptySpace(startIndex) {
+function fillEmptyInputSpace(startIndex) {
 
     let input, selectedCubeIndex, wrap, cursorRow
     switch (currInput) {
@@ -2193,7 +2435,7 @@ function moveCursor(key) {
         }
     }
 
-    alignNodes(120)
+    alignInputNodes(120)
 
 }
 
@@ -2409,6 +2651,92 @@ function notify(message, color, animation, duration = 1500, height, width, extra
     });
 }
 
+// Map/Card Toggle
+let universeAnimationIntervals = []
+universeHeaderToggle.addEventListener('click', (e) => {
+    if (e.target.dataset.active === 'true') {
+        // Clicked on active toggle
+        return
+    }
+    universeToggleDiv.classList.toggle('move')
+
+    if (universeToggleDiv.classList.contains('move')) {
+        // Clicked on map toggle
+        universeCardsToggle.dataset.active = 'false'
+        universeMapToggle.dataset.active = 'true'
+
+        cardsContainer.animate( 
+            [{opacity: '0', display: 'none'}], {
+            easing: 'ease',
+            fill: "forwards",
+            duration: 60,
+        });
+        mapContainer.animate(
+            [
+            {opacity: '0', display: 'none', offset: 0.7},
+            {opacity: '1', display: 'flex'},
+            ], {
+            easing: 'ease',
+            fill: "forwards",
+            duration: 150,
+        });
+        universeMapToolbox.animate(
+            [
+            {opacity: '0', display: 'none', offset: 0.7},
+            {opacity: '1', display: 'flex'},
+            ], {
+            easing: 'ease',
+            fill: "forwards",
+            duration: 150,
+        });
+        universeContainer.animate(
+            [
+            {width: `min(97%, ${universeSize.cardsWidth}px`, height: universeSize.cardsHeight + 'px', offset: 0.2},
+            {width: `min(97%, ${universeSize.mapWidth}px)`, height: '352px'},
+            ], {
+            easing: 'cubic-bezier(.01,.86,.72,1.01)',
+            fill: "forwards",
+            duration: 200,
+        });
+
+    } else {
+        // Clicked on cards toggle
+        universeCardsToggle.dataset.active = 'true'
+        universeMapToggle.dataset.active = 'false'
+
+        mapContainer.animate(
+            [{opacity: '0', display: 'none'}], {
+            easing: 'ease',
+            fill: "forwards",
+            duration: 60,
+        });
+        universeMapToolbox.animate(
+            [{opacity: '0', display: 'none'}], {
+            easing: 'ease',
+            fill: "forwards",
+            duration: 60,
+        });
+        cardsContainer.animate(
+            [
+            {opacity: '0', display: 'none', offset: 0.7},
+            {opacity: '1', display: 'grid'},
+            ], {
+            easing: 'ease',
+            fill: "forwards",
+            duration: 150,
+        });
+        universeContainer.animate(
+            [
+            {width: `min(97%, ${universeSize.mapWidth}px)`, height: '352px', offset: 0.2},
+            {width: `min(97%, ${universeSize.cardsWidth}px`, height: universeSize.cardsHeight + 'px'},
+            ], {
+            easing: 'cubic-bezier(.01,.86,.72,1.01)',
+            fill: "forwards",
+            duration: 200,
+        });
+    }
+});
+
 function submitInput() {
     try {
         console.log(puzzleData)
@@ -2439,10 +2767,7 @@ function submitInput() {
                     break;
             };
         }
-        // let setNameArr1 = [...inputValues.flatArray.setNameArr1].join("");
-        // let setNameArr2 = [...inputValues.flatArray.setNameArr2].join("");
-        // let restrictionArr1 = [...inputValues.flatArray.restrictionArr1].join("");
-        // let restrictionArr2 = [...inputValues.flatArray.restrictionArr2].join("");
+        
         let calcSymmetricDifference = true;
 
         if (!setNameArr1.length) {
@@ -2654,10 +2979,10 @@ function submitInput() {
         console.log(solutionSet1)
         console.log(solutionSet2)
         
-        // DISPLAYING ANSWER
+        // Displaying Answer
         newResult.innerHTML = ''
 
-        // HEADER
+        // Header
         const answerHeader = document.createElement('div')
         answerHeader.id = 'answer-header'
         const backButton = document.createElement('div')
@@ -2677,10 +3002,9 @@ function submitInput() {
         answerHeader.append(newPuzzleButton)
         newResult.append(answerHeader)
         
-        // Contnet
+        // Content
         const answerContent = document.createElement('div')
         answerContent.id = 'answer-content'
-
 
         let title, paragraph = '';
 
@@ -2853,12 +3177,12 @@ function submitInput() {
             inputResult.append(resultParagraph)
         }
 
-        // TITLE
+        // Title
         const titleNode = document.createElement('h2')
         titleNode.innerText = 'Your Solution'
         answerContent.append(titleNode)
 
-        // TOGGLE (2 SOLUTIONS)
+        // Toggle (2 Solutions)
         
         if (twoSolutions) {
 
@@ -2959,12 +3283,6 @@ function submitInput() {
         const inputSolutionContainer = document.createElement('div')
         inputSolutionContainer.classList = 'answer-solution-sub-container'
 
-        // for (let node of nodes) {
-        //     const newNode = node.cloneNode('deep')
-        //     newNode.style.left = '0px'
-        //     newNode.style.top = '0px'
-        //     inputAnswer.append(newNode)
-        // }
         const inputRestriction = document.createElement('div')
         inputRestriction.classList = 'answer-solution-sub-container'
         const inputSetName = document.createElement('div')
@@ -3049,7 +3367,7 @@ function submitInput() {
 
         console.log(puzzleData)
 
-        // DEFINED TOGGLE
+        // Defined toggle
         if (twoSolutions) {
             const answerToggleContainer = document.createElement('div');
             answerToggleContainer.id = 'answer-toggle-container-1'
@@ -3068,7 +3386,8 @@ function submitInput() {
             answerToggleContainer.addEventListener('click', (e) => {
                 if (e.target.dataset.active === 'true') {return}
                 answerToggleDiv.classList.toggle('move')
-                if (answerToggleDiv.classList.contains('move')) {    // CLICKED ON SECOND TOGGLE
+                if (answerToggleDiv.classList.contains('move')) {
+                    // Clicked on second toggle
                     answerLeftToggle.dataset.active = 'false'
                     answerRightToggle.dataset.active = 'true'
                     computerRestriction.innerHTML = ''
@@ -3077,7 +3396,8 @@ function submitInput() {
                     for (let node of computerValueNodes[1][1]) computerSetName.append(node);
                     computerCardSet.innerHTML = ''
                     for (let node of computerCardsArr[1]) computerCardSet.append(node);
-                } else {    // CLICKED ON FIRST TOGGLE
+                } else {
+                    // Clicked on first toggle
                     answerLeftToggle.dataset.active = 'true'
                     answerRightToggle.dataset.active = 'false'
                     computerRestriction.innerHTML = ''
@@ -3213,8 +3533,79 @@ const settings = {
     headerText: 'Settings',
     genNewPuzzle: false,
     forceVariations: [],
-    forceSymmetricDifference: false
+    forceSymmetricDifference: false,
+    maxUniverse: 14,
+    minUniverse: 10,
 }
+function applySettings(e) {
+    // Clicked on menu while wild picker open
+    if (wildPickerContainer.classList.contains('shown')) {
+        hideWildPicker(e)
+        return;
+    }
+    
+    if (settingsContainer.classList.contains('shown')) {
+        validateSettings()
+        let newVariationsLength = variationCount.value
+        if (parseFloat(newVariationsLength) !== puzzleParameters.setVariationsLength) {
+            settings.genNewPuzzle = true;
+            puzzleParameters.setVariationsLength = parseFloat(newVariationsLength)
+        }
+        if (!compareArr(settings.forceVariations, puzzleParameters.setVariations)) {
+            settings.genNewPuzzle = true;
+            puzzleParameters.setVariations = clone(settings.forceVariations)
+        }
+        if (settings.forceSymmetricDifference !== puzzleParameters.forceSymmetricDifference) {
+            settings.genNewPuzzle = true;
+            puzzleParameters.forceSymmetricDifference = settings.forceSymmetricDifference
+        }
+        if (settings.maxUniverse !== puzzleParameters.maxUniverse) {
+            settings.genNewPuzzle = true;
+            puzzleParameters.maxUniverse = settings.maxUniverse
+        }
+        if (settings.minUniverse !== puzzleParameters.minUniverse) {
+            settings.genNewPuzzle = true;
+            puzzleParameters.minUniverse = settings.minUniverse
+        }
+        if (settings.genNewPuzzle) {
+            queuedPuzzleData = null;
+            newPuzzle()
+            settings.genNewPuzzle = false
+        }
+        
+        // if (settings)
+    }
+
+    settingsContainer.classList.remove('shown')
+    menuBackground.classList.remove('shown')
+    header.classList.remove('dark')
+    if (settingsNodesContainer.classList.contains('page-2')) {
+        setTimeout(() => {
+            settingsNodesContainer.classList.remove('page-2')
+            settingsHeaderText.innerText = 'Settings'
+        }, 150)
+    }
+    variationsArrowBox.parentElement.classList.remove('dark') // REMOVE
+}
+function validateSettings() {
+    // Universe
+    let newMaxUniverse = parseInt(maxUniverse.value)
+    let newMinUniverse = parseInt(minUniverse.value)
+    if (newMaxUniverse < newMinUniverse) {
+        maxUniverse.value = settings.maxUniverse
+        minUniverse.value = settings.minUniverse
+    }
+    newMinUniverse = parseInt(minUniverse.value)
+    newMaxUniverse = parseInt(maxUniverse.value)
+
+    if (newMaxUniverse > 16) maxUniverse.value = 16
+    if (newMaxUniverse < 6) maxUniverse.value = 6
+    if (newMinUniverse > 16) minUniverse.value = 16
+    if (newMinUniverse < 6) minUniverse.value = 6
+
+    settings.maxUniverse = parseInt(maxUniverse.value)
+    settings.minUniverse = parseInt(minUniverse.value)
+};
 
 const settingsContainer = document.createElement('settings-container')
 settingsContainer.id = 'settings-container'
@@ -3230,7 +3621,7 @@ settingsNavButton.id = 'settings-nav-button'
 settingsHeader.append(settingsNavButton)
 settingsNavButton.addEventListener('click', () => {
     if (settings.headerText === 'Settings') {
-        menuBackground.click()
+        applySettings();
         return;
     }
     settingsNodesContainer.classList.remove('page-2')
@@ -3261,44 +3652,7 @@ settingsOverflowContainer.append(settingsNodesContainer)
 const menuBackground = document.createElement('div')
 menuBackground.id = 'menu-background'
 document.body.append(menuBackground)
-menuBackground.addEventListener('click', (e) => {
-    if (wildPickerContainer.classList.contains('shown')) {
-        hideWildPicker(e)
-        return;
-    }
-    if (settingsContainer.classList.contains('shown')) {
-        let newVariationsLength = variationCount.value
-        if (parseFloat(newVariationsLength) !== puzzleParameters.setVariationsLength) {
-            settings.genNewPuzzle = true;
-            puzzleParameters.setVariationsLength = parseFloat(newVariationsLength)
-        }
-        if (!compareArr(settings.forceVariations, puzzleParameters.setVariations)) {
-            settings.genNewPuzzle = true;
-            puzzleParameters.setVariations = clone(settings.forceVariations)
-        }
-        if (settings.forceSymmetricDifference !== puzzleParameters.forceSymmetricDifference) {
-            settings.genNewPuzzle = true;
-            puzzleParameters.forceSymmetricDifference = settings.forceSymmetricDifference
-        }
-        if (settings.genNewPuzzle) {
-            queuedPuzzleData = null;
-            newPuzzle()
-            settings.genNewPuzzle = false
-        }
-    }
-
-    settingsContainer.classList.remove('shown')
-    menuBackground.classList.remove('shown')
-    header.classList.remove('dark')
-    if (settingsNodesContainer.classList.contains('page-2')) {
-        setTimeout(() => {
-            settingsNodesContainer.classList.remove('page-2')
-            settingsHeaderText.innerText = 'Settings'
-        }, 150)
-    }
-    variationsArrowBox.parentElement.classList.remove('dark') // REMOVE
-    mapArrowBox.parentElement.classList.remove('dark') // REMOVE
-})
+menuBackground.addEventListener('click', (e) => {applySettings()})
 
 settingsIcon.addEventListener('click', (e) => {
     if (wildPickerContainer.classList.contains('shown')) {
@@ -3311,7 +3665,6 @@ settingsIcon.addEventListener('click', (e) => {
         settingsContainer.classList.add('shown')
         menuBackground.classList.add('shown')
         variationsArrowBox.parentElement.classList.add('dark') // Remove
-        mapArrowBox.parentElement.classList.add('dark')
         header.classList.add('dark')
         if (!settingsContainer.classList.contains('shown') && settingsNodesContainer.classList.contains('page-2')) {
             setTimeout(() => {
@@ -3320,7 +3673,7 @@ settingsIcon.addEventListener('click', (e) => {
             }, 150)
         }
     } else {
-        menuBackground.click()
+        applySettings()
     }
 });
 
@@ -3328,19 +3681,12 @@ function switchPage(activePage, title) {
     settingsNodesContainer.classList.add('page-2')
     settingsHeaderText.classList.add('fade')
     settingsNavButton.classList.add('fade')
-    for (let node of document.querySelectorAll('.settings-page-2.active')) node.classList.remove('active')
+    for (let node of document.querySelectorAll('.settings-page-2.active')) {
+        node.classList.remove('active')
+    }
     activePage.classList.add('active')
     settings.headerText = title
-}
-function createCategory(buttonID, pageID, title) {
-    const button = document.createElement('li')
-    button.id = buttonID
-    button.classList.add('settings-category')
-    button.innerText = title
-
-    const page = document.querySelector(pageID)
-    button.addEventListener('click', () => {switchPage(page, title)})
-    return button
+    validateSettings()
 }
 function createToggle(label, action) {
 
@@ -3372,7 +3718,7 @@ function createCounter(label, id, action, parameters = {}) {
 
     setInputFilter(counterInput, function(value) {return parameters.regex.test(value)});
     counterInput.value = parameters.value;
-    counterInput.maxValue = parameters.maxValue;
+    counterInput.maxLength = parameters.maxLength;
 
     const arrowUpDiv = document.createElement('div');
     const arrowDownDiv = document.createElement('div');
@@ -3397,21 +3743,23 @@ function createCheckbox(text, type) {
     checkBox.addEventListener('click', () => forceVariation(checkBox, type));
     return checkBox;
 }
-(function createPages() {
+(function createSettings() {
     
-    
-    // Variations Page
-    const settingsVariations = document.createElement('div')
-    settingsVariations.id = 'settings-variations'
-    settingsVariations.classList.add('settings-page-2')
-    const scrollContainer = document.createElement('div')
-    scrollContainer.classList.add('scroll-container')
-    settingsVariations.append(scrollContainer)
-    settingsNodesContainer.append(settingsVariations)
+    // Main Page
+    const mainPage = document.createElement('ul')
+    mainPage.classList.add('settings-page-1')
 
-    
+    // Variations Page
+    const settingsVariationsPage = document.createElement('div')
+    settingsVariationsPage.id = 'settings-variations-page'
+    settingsVariationsPage.classList.add('settings-page-2')
+    const variationsScrollContainer = document.createElement('div')
+    variationsScrollContainer.classList.add('scroll-container')
+    settingsVariationsPage.append(variationsScrollContainer)
+    settingsNodesContainer.append(settingsVariationsPage)
+
     const variationCounterList = document.createElement('ul')
-    scrollContainer.append(variationCounterList)
+    variationsScrollContainer.append(variationCounterList)
     const variationsCounter = createCounter('Number of Variations:', 'variation-count', function(increment) {
         let newVal = parseFloat(variationCount.value) + increment
         let activeCount = document.querySelectorAll('.settings-checkbox.active').length
@@ -3424,11 +3772,12 @@ function createCheckbox(text, type) {
     const variationLabel = document.createElement('div')
     variationLabel.classList.add('settings-label')
     variationLabel.innerText = 'Choose variations to always appear'
-    scrollContainer.append(variationLabel)
+    variationsScrollContainer.append(variationLabel)
 
     const forceVariationsList = document.createElement('ul')
     forceVariationsList.classList.add('force-variations')
-    scrollContainer.append(forceVariationsList)
+    forceVariationsList.style.marginTop = '2px'
+    variationsScrollContainer.append(forceVariationsList)
 
     let variationsArr = [['requiredCube', 'Required Cube'], ['wild', 'Wild'], ['twoOp', 'Two Operations',], 
     ['noNull', 'No Null Restrictions'], ['absValue', 'Absolute Value'], ['double', 'Double Set'], 
@@ -3439,22 +3788,65 @@ function createCheckbox(text, type) {
         const checkboxNode = createCheckbox(variation[1], variation[0])
         forceVariationsList.append(checkboxNode)
     }
-    
-    // Main Page
-    const mainPage = document.createElement('ul')
-    mainPage.classList.add('settings-page-1')
 
+    // Universe Page
+    const settingsUniversePage = document.createElement('div')
+    settingsUniversePage.id = 'settings-universe-page'
+    settingsUniversePage.classList.add('settings-page-2')
+    const universeScrollContainer = document.createElement('div')
+    universeScrollContainer.classList.add('scroll-container')
+    settingsUniversePage.append(universeScrollContainer)
+    settingsNodesContainer.append(settingsUniversePage)
+
+    const universeCounterList = document.createElement('ul')
+    universeScrollContainer.append(universeCounterList)
+    const maxUniverseCounter = createCounter('Maximum Universe Count', 'max-universe', function(increment) {
+        let newVal = parseFloat(maxUniverse.value) + increment
+        if (newVal > 16) newVal = 16
+        if (newVal < 6) newVal = 6
+        maxUniverse.value = newVal
+    },
+    {regex: /[^\d]/, value: 14, maxLength: 2})
+    universeCounterList.append(maxUniverseCounter)
+    const minUniverseCounter = createCounter('Minimum Universe Count', 'min-universe', function(increment) {
+        let newVal = parseFloat(minUniverse.value) + increment
+        if (newVal > 16) newVal = 16
+        if (newVal < 6) newVal = 6
+        minUniverse.value = newVal
+    },
+    {regex: /[^\d]/, value: 10, maxLength: 2})
+    universeCounterList.append(minUniverseCounter)
+
+    // Create pages
+    const pagesList = document.createElement('ul')
+    pagesList.style.marginTop = '8px'
+    mainPage.append(pagesList)
+
+    function createPage(buttonID, pageID, title) {
+        const button = document.createElement('li')
+        button.id = buttonID
+        button.classList.add('settings-page')
+        button.innerText = title
+    
+        const page = document.querySelector(pageID)
+        button.addEventListener('click', () => {switchPage(page, title)})
+        return button
+    }
     const pages = [
-        // ['#card-view-button', '#settings-card-view', 'Card View (Testing)'],
-        ['#variations-button', '#settings-variations', 'Variations'],
+        ['#variations-button', '#settings-variations-page', 'Variations'],
+        ['#universe-button', '#settings-universe-page', 'Universe']
     ]
     for (let page of pages) {
-        console.log("D")
-        const newCategory = createCategory(...page)
-        console.log(newCategory)
-        mainPage.append(newCategory)
+        const newPage = createPage(...page)
+        console.log(newPage)
+        pagesList.append(newPage)
     }
     settingsNodesContainer.append(mainPage)
+
+    // Create Toggles
+    const togglesList = document.createElement('ul')
+    togglesList.style.marginTop = '8px'
+    mainPage.append(togglesList)
 
     const symmetricDifferenceToggle = createToggle('Force Symmetric Difference', (element) => {
 
@@ -3465,7 +3857,6 @@ function createCheckbox(text, type) {
                 return
             }
             settings.forceSymmetricDifference = true
-            // if (settings.forceVariations.length === 6) variationCount.value = parseFloat(variationCount.value) + 1
             symmetricDifferenceCheck.classList.add('active')
             settings.forceVariations.push('symmetricDifference')
         } else if (symmetricDifferenceCheck.classList.contains('active')) {
@@ -3476,40 +3867,15 @@ function createCheckbox(text, type) {
         console.log(puzzleParameters)
     })
     symmetricDifferenceToggle.id = 'force-symmetric-difference'
-    mainPage.append(symmetricDifferenceToggle)
+    togglesList.append(symmetricDifferenceToggle)
     
 })();
 
 const variationCount = document.querySelector('#variation-count')
-
-// function toggleSetting(e) {
-//     // console.log(this)
-//     // console.log(e)
-//     genNewPuzzle = true;
-//     switch (this.dataset.type) {
-//         case 'force-symmetric-difference':
-//             this.classList.toggle('active')
-//             puzzleParameters.forceSymmetricDifference = !puzzleParameters.forceSymmetricDifference
-//             if (symmetricDifferenceCheck.classList.contains('active')) {
-//                 if (!this.classList.contains('active')) {
-//                     symmetricDifferenceCheck.classList.remove('active')
-//                     puzzleParameters.setVariations = deleteFirstArrItem(puzzleParameters.setVariations, 'symmetricDifference')
-//                 };
-//                 console.log(puzzleParameters)
-//                 return;
-//             }
-//             if (this.classList.contains('active')) {
-//                 if (puzzleParameters.setVariations.length === 6) variationCount.value = parseFloat(variationCount.value) + 1
-//                 symmetricDifferenceCheck.classList.add('active')
-//                 puzzleParameters.setVariations.push('symmetricDifference')
-//             }
-//             console.log(puzzleParameters)
-//         break;
-//     }
-// }
+const minUniverse = document.querySelector('#min-universe')
+const maxUniverse = document.querySelector('#max-universe')
 
 function forceVariation(element, variation) {
-    console.log("D")
     if (!element.classList.contains('active')) {
         if (settings.forceVariations.length >= variationCount.value) return
         if (variation === 'requiredCard' && forbiddenCheck.classList.contains('active')) forceVariation(forbiddenCheck, 'forbiddenCard')
@@ -3558,7 +3924,6 @@ function toggleWildPicker(e) {
     header.classList.toggle('dark')
     keyboardContainer.classList.toggle('dark')
     variationsArrowBox.parentElement.classList.toggle('dark') // REMOVE
-    mapArrowBox.parentElement.classList.toggle('dark') // REMOVE
 }
 
 function hideWildPicker(e) {
@@ -3570,7 +3935,6 @@ function hideWildPicker(e) {
     header.classList.remove('dark')
     keyboardContainer.classList.remove('dark')
     variationsArrowBox.parentElement.classList.remove('dark') // REMOVE
-    mapArrowBox.parentElement.classList.remove('dark') // REMOVE
 }
 
 const wildStylesElement = document.createElement('style')

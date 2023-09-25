@@ -74,11 +74,11 @@ onmessage = (e) => {
         return score;
     };
     
-    function generatePuzzle(randomize = true, setCubes, setUniverse, setVariations, setVariationsLength, setGoal, setForbidden, forceSymmetricDifference) {
+    function generatePuzzle(randomize = true, setCubes, setUniverse, minUniverse, maxUniverse, setVariations, setVariationsLength, setGoal, setForbidden, forceSymmetricDifference) {
         
         let returnNewPuzzle, metaData = [];
     
-        console.log(randomize, setCubes, setUniverse, setVariations, setGoal, setForbidden)
+        console.log(randomize, setCubes, setUniverse, minUniverse, maxUniverse, setVariations, setGoal, setForbidden)
     
         // GENERAL FUNCTIONS:
     
@@ -450,7 +450,7 @@ onmessage = (e) => {
         let universeArr;
     
         (function generateUniverse() {
-            universeArr = randomSort(["BRGY","BRG","BRY","BR","BGY","BG","BY","B","RGY","RG","RY","R","GY","G","Y",""]).slice(0, getRandomNumber(10, 14));        
+            universeArr = randomSort(["BRGY","BRG","BRY","BR","BGY","BG","BY","B","RGY","RG","RY","R","GY","G","Y",""]).slice(0, getRandomNumber(minUniverse, maxUniverse));        
         })();
         
         if (setUniverse) universeArr = setUniverse
@@ -1557,7 +1557,7 @@ onmessage = (e) => {
         // }
 
         console.log(randomize)
-        if (returnNewPuzzle) return generatePuzzle(randomize, setCubes, setUniverse, setVariations, setVariationsLength, setGoal, setForbidden, forceSymmetricDifference);
+        if (returnNewPuzzle) return generatePuzzle(randomize, setCubes, setUniverse, minUniverse, maxUniverse, setVariations, setVariationsLength, setGoal, setForbidden, forceSymmetricDifference);
         class PuzzleData {
             constructor(cubesArr, modifiedCubesArr, universeArr, variationsArr, variationsMap, goalArr, goalShape, goalValues, forbiddenArr, solution, metaData) {
                 this.cubes = cubesArr;
