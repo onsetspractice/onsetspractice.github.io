@@ -2665,9 +2665,11 @@ universeHeaderToggle.addEventListener('click', (e) => {
         universeCardsToggle.dataset.active = 'false'
         universeMapToggle.dataset.active = 'true'
 
-        cardsContainer.style.display = 'none'
-        mapContainer.style.display = 'flex'
-        universeMapToolbox.style.display = 'flex'
+        setTimeout(function() {
+            cardsContainer.style.display = 'none'
+            mapContainer.style.display = 'flex'
+            universeMapToolbox.style.display = 'flex'
+        }, 60)
 
         cardsContainer.animate( 
             [{opacity: '0'}], {
@@ -2708,10 +2710,11 @@ universeHeaderToggle.addEventListener('click', (e) => {
         universeCardsToggle.dataset.active = 'true'
         universeMapToggle.dataset.active = 'false'
 
-        cardsContainer.style.display = 'grid'
-        mapContainer.style.display = 'none'
-        universeMapToolbox.style.display = 'none'
-
+        setTimeout(function() {
+            cardsContainer.style.display = 'grid'
+            mapContainer.style.display = 'none'
+            universeMapToolbox.style.display = 'none'
+        }, 60)
         mapContainer.animate(
             [{opacity: '0'}], {
             easing: 'ease',

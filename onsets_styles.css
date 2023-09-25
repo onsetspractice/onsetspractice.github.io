@@ -920,6 +920,7 @@ header h1 {
     text-align: center;
     z-index: 1;
     width: 76px;
+    -webkit-user-select: none;
     user-select: none;
     /* color: rgb(0 0 0 / 50%) */
 }
