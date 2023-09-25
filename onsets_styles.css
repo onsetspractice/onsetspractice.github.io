@@ -935,6 +935,7 @@ header h1 {
 #universe-toggle-div.move {left: calc(100% - 76px);}
 #universe-map-toolbox {
     display: none;
+    opacity: 0;
     position: absolute;
     justify-content: space-between;
     align-items: center;

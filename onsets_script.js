@@ -2665,16 +2665,20 @@ universeHeaderToggle.addEventListener('click', (e) => {
         universeCardsToggle.dataset.active = 'false'
         universeMapToggle.dataset.active = 'true'
 
+        cardsContainer.style.display = 'none'
+        mapContainer.style.display = 'flex'
+        universeMapToolbox.style.display = 'flex'
+
         cardsContainer.animate( 
-            [{opacity: '0', display: 'none'}], {
+            [{opacity: '0'}], {
             easing: 'ease',
             fill: "forwards",
             duration: 60,
         });
         mapContainer.animate(
             [
-            {opacity: '0', display: 'none', offset: 0.7},
-            {opacity: '1', display: 'flex'},
+            {opacity: '0', offset: 0.7},
+            {opacity: '1'},
             ], {
             easing: 'ease',
             fill: "forwards",
@@ -2682,8 +2686,8 @@ universeHeaderToggle.addEventListener('click', (e) => {
         });
         universeMapToolbox.animate(
             [
-            {opacity: '0', display: 'none', offset: 0.7},
-            {opacity: '1', display: 'flex'},
+            {opacity: '0', offset: 0.7},
+            {opacity: '1'},
             ], {
             easing: 'ease',
             fill: "forwards",
@@ -2704,22 +2708,26 @@ universeHeaderToggle.addEventListener('click', (e) => {
         universeCardsToggle.dataset.active = 'true'
         universeMapToggle.dataset.active = 'false'
 
+        cardsContainer.style.display = 'grid'
+        mapContainer.style.display = 'none'
+        universeMapToolbox.style.display = 'none'
+
         mapContainer.animate(
-            [{opacity: '0', display: 'none'}], {
+            [{opacity: '0'}], {
             easing: 'ease',
             fill: "forwards",
             duration: 60,
         });
         universeMapToolbox.animate(
-            [{opacity: '0', display: 'none'}], {
+            [{opacity: '0'}], {
             easing: 'ease',
             fill: "forwards",
             duration: 60,
         });
         cardsContainer.animate(
             [
-            {opacity: '0', display: 'none', offset: 0.7},
-            {opacity: '1', display: 'grid'},
+            {opacity: '0', offset: 0.7},
+            {opacity: '1'},
             ], {
             easing: 'ease',
             fill: "forwards",
