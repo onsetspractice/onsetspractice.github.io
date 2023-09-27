@@ -660,16 +660,10 @@ header h1 {
 }
 #restriction-container:hover, #solution-container:hover {
     background-color: rgb(71, 17, 34);
-    transition-duration: 0s;
 }
-/* #restriction-container.active, #solution-container.active {
+#restriction-container.active, #solution-container.active {
     background-color: rgb(71, 17, 34);
-    transition-duration: 0s;
-
-} */
-/* #restriction-container:active, #solution-container:active {
-    background-color: rgb(67, 16, 32);
-} */
+}
 
 #restriction-bar, #solution-bar {
     position: relative;

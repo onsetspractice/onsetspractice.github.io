@@ -1515,6 +1515,7 @@ blankWildContainer.addEventListener('click', (e) => {
 // Toggle between Solution 1 and 2:
 solutionFormContainer.addEventListener('click', toggleSolution)
 function toggleSolution(e) {
+    hideKeyboard()
 
     // If clicking on active toggle, return
     if (e.target.dataset.active === 'true') return;
@@ -3780,7 +3781,7 @@ function submitInput() {
         newResult.append(answerContent)
         resultBackground.classList.toggle('shown')
         newResult.classList.toggle('shown')
-        
+
     } catch (error) {
         console.log(error)
         notify('Invalid input!', 'red', 'bounce', 1500, '', '')
