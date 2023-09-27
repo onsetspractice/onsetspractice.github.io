@@ -11,7 +11,7 @@ onmessage = (e) => {
 
     let setTimer = new Date()
     
-    function getRandomNumber(min, max) {
+    function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max + 1 - min)) + min;
     };
     
@@ -76,14 +76,17 @@ onmessage = (e) => {
     
     function generatePuzzle(randomize = true, setCubes, setUniverse, minUniverse, maxUniverse, setVariations, setVariationsLength, setGoal, setForbidden, forceSymmetricDifference) {
         
-        let returnNewPuzzle, metaData = [];
+        let returnNewPuzzle, metaData = {
+            double: [],
+            noRestrictions: false,
+        };
     
         console.log(randomize, setCubes, setUniverse, minUniverse, maxUniverse, setVariations, setGoal, setForbidden)
     
         // GENERAL FUNCTIONS:
     
-        function randomArrayValue (arr) {
-            return arr[getRandomNumber(0, arr.length - 1)]
+        function randomArrayValue(arr) {
+            return arr[getRandomInt(0, arr.length - 1)]
         };
     
         function containsVariation(input) {    // DOES ARRAY CONTAIN INPUT VARIATION?
@@ -207,30 +210,30 @@ onmessage = (e) => {
                     if (arr[2] === "V") {
                         answer = [universe, []]
                         if (arr[1] === "U") {
-                            switch(getRandomNumber(1, 4)) {
+                            switch(getRandomInt(1, 4)) {
                                 case 1: flag = ["VUV"]; break;
                                 case 2: flag = ["VUɅ"]; break;
                                 case 3: flag = ["ɅUV"]; break;
                                 case 4: flag = ["V∩V"]; break;
                             };
-                            switch (getRandomNumber(1, 4)) {
+                            switch (getRandomInt(1, 4)) {
                                 case 1: flag.push("V∩Ʌ"); break;
                                 case 2: flag.push("Ʌ∩V"); break;
                                 case 3: flag.push("Ʌ∩Ʌ"); break;
                                 case 4: flag.push("ɅUɅ"); break;
                             };
                         } else if (symmetricDifference) {    // OPERATION IS "-"
-                            switch (getRandomNumber(1, 2)) {
+                            switch (getRandomInt(1, 2)) {
                                 case 1: flag = [("Ʌ-V")]; break;
                                 case 2: flag = [("V-Ʌ")]; break;
                             };
-                            switch (getRandomNumber(1, 2)) {
+                            switch (getRandomInt(1, 2)) {
                                 case 1: flag.push("V-V"); break;
                                 case 2: flag.push("Ʌ-Ʌ"); break;
                             };
                         } else {    // OPERATION IS "-"
                             flag = ["V-Ʌ"];
-                            switch (getRandomNumber(1, 3)) {
+                            switch (getRandomInt(1, 3)) {
                                 case 1: flag.push("V-V"); break;
                                 case 2: flag.push("Ʌ-V"); break;
                                 case 3: flag.push("Ʌ-Ʌ"); break;
@@ -382,7 +385,7 @@ onmessage = (e) => {
             // COLORS:
             const colors = [];
             for (let i = 0; i < 8; i++) {
-                let roll = getRandomNumber(1, 6)
+                let roll = getRandomInt(1, 6)
                 switch (roll) {
                     case 1: colors.push("R"); break;
                     case 2: colors.push("R"); break;
@@ -398,7 +401,7 @@ onmessage = (e) => {
             // NUMBERS:
             const numbers = [];
             for (let i = 0; i < 3; i++) {
-                let roll = getRandomNumber(1, 6)
+                let roll = getRandomInt(1, 6)
                 switch (roll) {
                     case 1: numbers.push(1); break;
                     case 2: numbers.push(1); break;
@@ -414,8 +417,8 @@ onmessage = (e) => {
             // OPERATIONS:
             const operations = [];
             for (let i = 0; i < 4; i++) {
-                let roll = getRandomNumber(1, 6)
-                if (forceSymmetricDifference) roll = Math.trunc(getRandomNumber(1, 6) / 6) + 1
+                let roll = getRandomInt(1, 6)
+                if (forceSymmetricDifference) roll = Math.trunc(getRandomInt(1, 6) / 6) + 1
                 switch (roll) {
                     case 1: operations.push("-"); break;
                     case 2: operations.push("'"); break;
@@ -430,7 +433,7 @@ onmessage = (e) => {
             // RESTRICTIONS:
             const restrictions = [];
             for (let i = 0; i < 3; i++) {
-                let roll = getRandomNumber(1, 6)
+                let roll = getRandomInt(1, 6)
                 switch (roll) {
                     case 1: restrictions.push("Ʌ"); break;
                     case 2: restrictions.push("V"); break;
@@ -450,7 +453,7 @@ onmessage = (e) => {
         let universeArr;
     
         (function generateUniverse() {
-            universeArr = randomSort(["BRGY","BRG","BRY","BR","BGY","BG","BY","B","RGY","RG","RY","R","GY","G","Y",""]).slice(0, getRandomNumber(minUniverse, maxUniverse));        
+            universeArr = randomSort(["BRGY","BRG","BRY","BR","BGY","BG","BY","B","RGY","RG","RY","R","GY","G","Y",""]).slice(0, getRandomInt(minUniverse, maxUniverse));        
         })();
         
         if (setUniverse) universeArr = setUniverse
@@ -490,13 +493,17 @@ onmessage = (e) => {
                         // double = ["BR", "BRY", "BRG", "BRGY", "RG", "RGY", "R", "GY", "Y", "G", "RY", '']; break;
                         case "requiredCard": variationsArr.push({"requiredCard": variationInput("requiredcard")}); break;
                         case "forbiddenCard": variationsArr.push({"forbiddenCard": variationInput("forbiddencard")}); break;
-                        case "blankWild": variationsArr.push("blankWild"); blankWild = true; break;
+                        case "blankWild":
+                            variationsArr.push("blankWild");
+                            blankWild = true;
+                            if (!universeArr.includes('')) universeArr[getRandomInt(0, universeArr.length - 1)] = ''
+                            break;
                         case "symmetricDifference": variationsArr.push("symmetricDifference"); symmetricDifference = true; break;
                         case "twoSolutions": variationsArr.push("twoSolutions"); twoSolutions = true; break;
                     };
                     let newVal = variationsArr[variationsArr.length - 1]
                     if (typeof newVal === 'string') {
-                        variationsMap.set(newVal, 'true')
+                        variationsMap.set(newVal, true)
                     } else {
                         console.log(Object.keys(newVal)[0])
                         variationsMap.set(Object.keys(newVal)[0], Object.values(newVal)[0])
@@ -519,31 +526,31 @@ onmessage = (e) => {
                     case "double": 
                         let set = [];
                         let valArr = ["B", "R", "G", "Y"]
-                        switch (getRandomNumber(1, 4)) {
+                        switch (getRandomInt(1, 4)) {
                             case 1: set.push(valArr[0]); valArr.splice(0, 1); break;
                             case 2: set.push(valArr[1]); valArr.splice(1, 1); break;
                             case 3: set.push(valArr[2]); valArr.splice(2, 1); break;
                             case 4: set.push(valArr[3]); valArr.splice(3, 1); break;
                         };
-                        if (getRandomNumber(1, 4) !== 1) {
-                            switch (getRandomNumber(1, 3)) {
+                        if (getRandomInt(1, 4) !== 1) {
+                            switch (getRandomInt(1, 3)) {
                                 case 1: set.push("U"); break;
                                 case 2: set.push("∩"); break;
                                 case 3: set.push("-"); break;
                             };
-                            set.push(valArr[getRandomNumber(1, 2)])
+                            set.push(valArr[getRandomInt(1, 2)])
                         };
                         let operationArr = set.slice();
                         if (set.length === 1) operationArr[0] = translateBRGY(operationArr[0]);
-                        if (getRandomNumber(0, 1)) {
-                            if (!getRandomNumber(0, 2) && set.length === 3) {
+                        if (getRandomInt(0, 1)) {
+                            if (!getRandomInt(0, 2) && set.length === 3) {
                                 double = universeArr.filter(val => !setOperation(set).includes(val));
                                 set[0] = "(".concat(set[0])
                                 set[2] = set[2].concat(")'")
                                 if (double.length === 0 || double.length === universeArr.length) return variationInput("double");
                                 return set.join("");
                             } else {
-                                let index = (getRandomNumber(0, 1) * (set.length - 1));
+                                let index = (getRandomInt(0, 1) * (set.length - 1));
                                 operationArr[index] = universeArr.filter(val => !translateBRGY(operationArr[index]).includes(val));
                                 set[index] = set[index].concat("'");
                             };
@@ -552,7 +559,7 @@ onmessage = (e) => {
                         if (double.length === 0 || double.length === universeArr.length) return variationInput("double")
                         return set.join("");
                     case "requiredcard":
-                        if (universeArr.includes("") && getRandomNumber(1, 4) === 1) {
+                        if (universeArr.includes("") && getRandomInt(1, 4) === 1) {
                             return ""
                         } else {
                             return randomArrayValue(universeArr);
@@ -561,14 +568,14 @@ onmessage = (e) => {
                         let availableUniverse = universeArr 
                         if (variationsMap.get("blankWild")) availableUniverse = universeArr.filter(val => val !== "")
                         console.log("AVAIL", availableUniverse)
-                        return availableUniverse[getRandomNumber(0, universeArr.length - 1)];
+                        return availableUniverse[getRandomInt(0, universeArr.length - 1)];
                 }
             }
             let i = 0;
             let variationLength = setVariationsLength ?? 6
             while (variationsArr.length < variationLength) {
                 i++
-                let roll = getRandomNumber(1, 11);
+                let roll = getRandomInt(1, 11);
                 // if (i === 1) roll = 10;
                 switch (roll) {
                     case 1:
@@ -612,6 +619,7 @@ onmessage = (e) => {
                         }; break;
                     case 10:
                         if (!variationsArr.includes("symmetricDifference")) {
+                            if (!cubesArr.flat().includes('-')) break;
                             if (variationsMap.get("wild") === "-") break;
                             variationsArr.push("symmetricDifference");
                             symmetricDifference = true;
@@ -628,7 +636,7 @@ onmessage = (e) => {
                 let newVal = variationsArr[variationsArr.length - 1]
                 if (newVal === undefined) continue;
                 if (typeof newVal === 'string') {
-                    variationsMap.set(newVal, 'true')
+                    variationsMap.set(newVal, true)
                 } else {
                     console.log(Object.keys(newVal)[0])
                     variationsMap.set(Object.keys(newVal)[0], Object.values(newVal)[0])
@@ -650,7 +658,7 @@ onmessage = (e) => {
             console.log(variationsArr);
             if (double) {
                 console.log("DOUBLE", double);
-                metaData.push(double)
+                metaData.double = double
                 universeArr = universeArr.concat(universeArr.filter(val => double.includes(val))).sort();
                 console.log(universeArr)
             };
@@ -691,21 +699,21 @@ onmessage = (e) => {
     
             while (goalArr.length === 0) {
                 let num1, num2, num3
-                switch (getRandomNumber(1, 7)) {
+                switch (getRandomInt(1, 7)) {
                     case 1:     // ADD 1 CUBE
-                        goalArr.push(numerals[getRandomNumber(0, 2)]); goalShape = 1; break;
+                        goalArr.push(numerals[getRandomInt(0, 2)]); goalShape = 1; break;
                     case 2:     // ADD 2 CUBES
                         altNumerals = [...numerals];
-                        index = getRandomNumber(0, 2);
+                        index = getRandomInt(0, 2);
                         num1 = numerals[index];
                         altNumerals = altNumerals.slice(0, index).concat(altNumerals.slice(index + 1));
-                        num2 = altNumerals[getRandomNumber(0, 1)];
-                        if (getRandomNumber(1, 4) === 1) {     // MAKE SMALLER NUMBER NEGATIVE (25%)
+                        num2 = altNumerals[getRandomInt(0, 1)];
+                        if (getRandomInt(1, 4) === 1) {     // MAKE SMALLER NUMBER NEGATIVE (25%)
                             num1 < num2 ? num1 *= -1 : num2 *= -1
                         };
                         goalArr = [num1, "+", num2]; goalShape = 2; break;
                     case 3:     // ADD 3 CUBES
-                        if (numerals[0] + numerals[1] + numerals[2] > universeArrLength || getRandomNumber(1, 4) === 1) {
+                        if (numerals[0] + numerals[1] + numerals[2] > universeArrLength || getRandomInt(1, 4) === 1) {
                             numerals[0] *= -1;
                         } else if (numerals[2] > numerals[0] + numerals[1] && Math.random() >= 0.5) {
                             numerals[0] *= -1;
@@ -716,10 +724,10 @@ onmessage = (e) => {
                         goalArr = [altNumerals[0], "+", altNumerals[1], "+", altNumerals[2]]; goalShape = 3; break;
                     case 4:     // MULTIPLY 2 CUBES
                         altNumerals = [...numerals];
-                        index = getRandomNumber(0, 2);
+                        index = getRandomInt(0, 2);
                         num1 = numerals[index];
                         altNumerals = altNumerals.slice(0, index).concat(altNumerals.slice(index + 1));
-                        index = getRandomNumber(0, 1);
+                        index = getRandomInt(0, 1);
                         num2 = altNumerals[index];
                         num3 = altNumerals[1 - index];
                         if (num1 * num2 > universeArrLength) {
@@ -738,10 +746,10 @@ onmessage = (e) => {
                         }; goalShape = 5; break;
                     case 6:     // A x (B + C) or (A x B) + (A x C)
                         altNumerals = [...numerals];
-                        index = getRandomNumber(0, 2);
+                        index = getRandomInt(0, 2);
                         num1 = numerals[index];
                         altNumerals = altNumerals.slice(0, index).concat(altNumerals.slice(index + 1));
-                        index = getRandomNumber(0, 1);
+                        index = getRandomInt(0, 1);
                         num2 = altNumerals[index];
                         num3 = altNumerals[1 - index];
                         altNumerals.sort((a, b) => a - b)
@@ -777,10 +785,10 @@ onmessage = (e) => {
                         }; goalShape = 6; break;
                     case 7:     // MULTIPLY 2 CUBES THEN ADD 1 CUBE
                         altNumerals = [...numerals];
-                        index = getRandomNumber(0, 2);
+                        index = getRandomInt(0, 2);
                         num1 = numerals[index];
                         altNumerals = altNumerals.slice(0, index).concat(altNumerals.slice(index + 1));
-                        index = getRandomNumber(0, 1);
+                        index = getRandomInt(0, 1);
                         num2 = altNumerals[index];
                         num3 = altNumerals[1 - index];
                         if (num1 * num2 - num3 <= universeArrLength) {
@@ -907,7 +915,7 @@ onmessage = (e) => {
             forbiddenArr = [];
             modifiedCubesArr = cubesArr.slice();
     
-            (totalValues.length > 8) ? forbiddenArrLength = getRandomNumber(3, 4) : forbiddenArrLength = getRandomNumber(1, 2);
+            (totalValues.length > 8) ? forbiddenArrLength = getRandomInt(3, 4) : forbiddenArrLength = getRandomInt(1, 2);
             // (totalValues.length > 8) ? forbiddenArrLength = generateRandomNumber(4, 4) : forbiddenArrLength = generateRandomNumber(2, 3);
             
             if (totalValues.length - forbiddenArrLength >= 7 && restrictionCubes.length >= 3) {
@@ -1184,9 +1192,9 @@ onmessage = (e) => {
             console.groupEnd()
         };
         
-        let noRestrictions;
+        let noRestrictions = false;
         (mustContain || equals) ? generateRestrictions() : noRestrictions = true;
-        if (noRestrictions) metaData.push('noRestrictions')
+        metaData.noRestrictions = noRestrictions
         let solution;
     
         function generateSolutions() {
@@ -1391,13 +1399,13 @@ onmessage = (e) => {
                                 relevantCurrentSolutions.push(new Solution(solutionRestriction, permFlag, permCards, blankCard));
                             } else {
                                 if (backup) {
-                                    backupSolution[solutionEval][0].push(new Solution(solutionRestriction, permFlag, permCards));
+                                    backupSolution[solutionEval][0].push([new Solution(solutionRestriction, permFlag, permCards)]);
                                     backupIndex.index = solutionEval;
                                     backupIndex.length = arr.length;
                                 } else {
                                     console.log(arr)
                                     console.log(permFlag)
-                                    solutionsArr.push(new Solution(solutionRestriction, permFlag, permCards, blankCard));
+                                    solutionsArr.push([new Solution(solutionRestriction, permFlag, permCards, blankCard)]);
                                     solutionLengths.push(arr.length);
                                     breakLoop1 = true;
                                     breakLoop2 = true;
@@ -1457,7 +1465,7 @@ onmessage = (e) => {
                     function newGoal(val) {
                         let numbers = []
                         for (let i = 0; i < 3; i++) {
-                            let roll = getRandomNumber(1, 6)
+                            let roll = getRandomInt(1, 6)
                             switch (roll) {
                                 case 1: numbers.push(1); break;
                                 case 2: numbers.push(1); break;
@@ -1509,7 +1517,7 @@ onmessage = (e) => {
             let stopTimer = new Date(); console.log(" > DONE GENERATING SOLUTIONS: " + (stopTimer.getTime() - setTimer.getTime())/1000 + " SECONDS");
             
             // MOVING CUBES FROM FORBBIDEN BACK TO RESOURCES
-            let count = getRandomNumber(0, forbiddenArr.length)
+            let count = getRandomInt(0, forbiddenArr.length)
             for (let i = 0; i < count; i++) {
                 let toPush = randomArrayValue(forbiddenArr);
                 if (toPush === "V" || toPush === "Ʌ") {

@@ -26,6 +26,7 @@ body {
     transition: 0.20s cubic-bezier(.4,0,.2,1);
     z-index: 5;
     user-select: none;
+    -webkit-user-select: none;
 }
 #loading.shown {
     opacity: 1;
@@ -93,6 +94,7 @@ header.dark {
 }
 header h1 {
     user-select: none;
+    -webkit-user-select: none;
     position: absolute;
     font-size: 25px;
     align-self: center;
@@ -124,6 +126,7 @@ header h1 {
     display: flex;
     flex-direction: column;
     user-select: none;
+    -webkit-user-select: none;
 }
 #settings-container.shown {
     visibility: visible;
@@ -175,6 +178,7 @@ header h1 {
     transition: opacity 200ms ease-in-out;
     margin: 0;
     user-select: none;
+    -webkit-user-select: none;
 }
 #settings-header h4.fade, #settings-nav-button.fade {
     opacity: 0;
@@ -358,6 +362,7 @@ header h1 {
     align-items: center;
     transition: filter 50ms, opacity 50ms;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 .cube:hover {filter: brightness(98%); transition: filter 0s}
@@ -874,6 +879,7 @@ header h1 {
     text-align: center;
     transition: 0.1s;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 #submit-button:hover {background-color:rgb(64, 157, 94)}
@@ -889,7 +895,6 @@ header h1 {
     margin: 100px auto 15px;
     flex-direction: column;
 }
-
 #universe-header {
     display: flex;
     background-color: transparent;
@@ -899,7 +904,6 @@ header h1 {
     border-bottom: 1px solid #dadada;
     justify-content: center;
 }
-
 #universe-header-toggle {
     display: flex;
     position: relative;
@@ -920,8 +924,8 @@ header h1 {
     text-align: center;
     z-index: 1;
     width: 76px;
-    -webkit-user-select: none;
     user-select: none;
+    -webkit-user-select: none;
     /* color: rgb(0 0 0 / 50%) */
 }
 #universe-toggle-div {
@@ -957,6 +961,7 @@ header h1 {
     z-index: 1;
     width: 28px;
     user-select: none;
+    -webkit-user-select: none;
     border-radius: 8px;
 }
 .universe-map-tool:not(.active):hover {
@@ -976,19 +981,21 @@ header h1 {
 }
 .map {
     width: 282px;
+    height: 282px;
     background-color: whitesmoke;
     box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
     border-radius: 8px;
     z-index: 3;
     user-select: none;
+    -webkit-user-select: none;
 }
 .map-table {
     margin: 20px;
     table-layout: fixed;
     border-collapse: collapse;
 }
-.map-table .blackout {
-    background-color: rgba(0, 0, 0, 0.85);
+.map-table .blackout:not(.blank-wild) {
+    background-color: rgba(0, 0, 0, 0.85) !important;
 }
 .map-table .horizontal-table-heading {
     border-left: 1px solid black;
@@ -1009,12 +1016,13 @@ header h1 {
     font-weight: 550;
     height: 50px;
     position: relative;
+    text-align: left;
 }
-.map-table td:not(.blackout):hover {
+.map-table td.map-hover-event:not(.blackout):hover {
     cursor: pointer;
     background-color: rgb(233, 233, 233)
 }
-.map-table td:not(.blackout).map-shade:hover {
+.map-table td.map-hover-event:not(.blackout).map-shade:hover {
     background-color: rgb(190, 190, 190)
 }
 .map-table td.map-cross {
@@ -1071,7 +1079,6 @@ header h1 {
     align-items: center;
     height: 116px;
     width: 78px;
-    /* perspective: 900px; */
 }
 .card-content {
     display: flex;
@@ -1105,7 +1112,7 @@ header h1 {
     border-radius: 8px;
     /* display: none; */
 }
-@media (max-resolution: 100dpi) {
+@media (max-resolution: 101dpi) {
     .double .card-content-front {
         height: 112px;
         width: 74px;
@@ -1380,6 +1387,7 @@ header h1 {
 
     box-shadow: 0 0 5px rgb(0 0 0 / 40%);
     border-radius: 10px 10px 0 0;
+    
     translate: 0 100%;
     transition: translate 350ms cubic-bezier(0.15, 0.94, 0.41, 0.99) 0ms;
     display: flex;
@@ -1477,6 +1485,7 @@ header h1 {
     z-index: 8;
     width: 90px;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 .answer-toggle-div {
@@ -1524,9 +1533,7 @@ header h1 {
     background-color: grey;
     margin: 5px 0 !important;
 }
-
-
-.answer-solution-container > :first-child, .answer-solution-container > :last-child {
+.answer-solution-container > :not(:nth-child(2)) {
     display: flex;
     flex-direction: row;
     line-height: 48px;
@@ -1534,15 +1541,54 @@ header h1 {
     flex-wrap: wrap;
     margin: 1px;
 }
-
-.card-set {
+.answer-universe-container {
+    background-color: rgb(237, 237, 237);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 20%);
+    display: flex;
     margin: 30px auto;
     margin-top: 10px;
-    /* width: 80%; */
-    max-width: 616px;
-    display: flex;
+    flex-shrink: 0;
     flex-wrap: wrap;
-    /* height: 300px; */
+    width: 971px;
+}
+.answer-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 88px);
+    grid-template-rows: repeat(auto-fill, 126px);
+    justify-content: center;
+    align-content: center;
+    height: 100%;
+    margin: auto;
+    padding: 5px 15px;
+    border-right: 1px solid #dadada;
+    max-width: 647px;
+    width: 100%;
+    min-width: 0px;
+    flex-shrink: 0;
+}
+.answer-map-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 21px;
+}
+/* @media (max-width: 1110px) or (max-resolution: 101dpi) { */
+@media (max-width: 1110px) {
+    .answer-universe-container {
+        flex-direction: column;
+        width: 646px;
+    }
+    .answer-cards-container {
+        border-right: none;
+        height: auto;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #dadada
+    }
+    .answer-map-container {
+        height: auto;
+        margin: 15px auto;
+    }
 }
 #new-answer .card:hover.flip {filter: none}
 #new-answer .card:hover.flip .card-content{transform: rotateX(0)}

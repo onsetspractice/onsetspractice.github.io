@@ -1,17 +1,12 @@
 let setTimer = new Date()
-
 // Start of functions
 function clone(arr) {
     return JSON.parse(JSON.stringify(arr))
 }
-function getVariation(variation) {
-    console.log()
-    return puzzleData.variations[puzzleData.variations.findIndex(val => Object.keys(val)[0] === variation)][variation]
-};
 function test() {
     let stopTimer = new Date(); console.log((stopTimer.getTime() - setTimer.getTime())/1000 + " SECONDS");
 };
-function getRandomNumber(min, max) {
+function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max + 1 - min)) + min;
 };
 function deleteFirstArrItem(array, item) {
@@ -99,9 +94,9 @@ function addColorChild(card, color) {
     card.append(newColor)
 };
 function randomArrayValue(arr) {
-    return arr[getRandomNumber(0, arr.length - 1)]
+    return arr[getRandomInt(0, arr.length - 1)]
 };
-function createMapTable() {
+function createMapTable(params) {
     // Create table and its elements
     const table = document.createElement('table');
     table.classList.add("map-table");
@@ -138,6 +133,7 @@ function createMapTable() {
                 }
             }
 
+            if (!params.isAnswerMap) element.classList.add('map-hover-event')
             tr.append(element);
         });
 
@@ -147,90 +143,142 @@ function createMapTable() {
     // Format the data
     const mapArr = table.querySelectorAll("td")
     let nullSet = ["BRGY","BRG","BRY","BR","BGY","BG","BY","B","RGY","RG","RY","R","GY","G","Y",""].filter(val => !puzzleData.universe.includes(val));
-    for (let card of nullSet) {
-        switch (card) {
-            case "BR": mapArr[0].classList.add('blackout'); break;
-            case "BRY": mapArr[1].classList.add('blackout'); break;
-            case "BY": mapArr[2].classList.add('blackout'); break;
-            case "B": mapArr[3].classList.add('blackout'); break;
-            case "BRG": mapArr[4].classList.add('blackout'); break;
-            case "BRGY": mapArr[5].classList.add('blackout'); break;
-            case "BGY": mapArr[6].classList.add('blackout'); break;
-            case "BG": mapArr[7].classList.add('blackout'); break;
-            case "RG": mapArr[8].classList.add('blackout'); break;
-            case "RGY": mapArr[9].classList.add('blackout'); break;
-            case "GY": mapArr[10].classList.add('blackout'); break;
-            case "G": mapArr[11].classList.add('blackout'); break;
-            case "R": mapArr[12].classList.add('blackout'); break;
-            case "RY": mapArr[13].classList.add('blackout'); break;
-            case "Y": mapArr[14].classList.add('blackout'); break;
-            case "": mapArr[15].classList.add('blackout'); break;
+    let cardIDMap = new Map([
+        [0, 'BR'], [1, 'BRY'], [2, 'BY'], [3, 'B'],
+        [4, 'BRG'], [5, 'BRGY'], [6, 'BGY'], [7, 'BG'],
+        [8, 'RG'], [9, 'RGY'], [10, 'GY'], [11, 'G'],
+        [12, 'R'], [13, 'RY'], [14, 'Y'], [15, '']
+    ]);
+    if (blankWildActive && params.blankCard) {
+        let blankCard = ''
+        let tableText = ['<br>','<br>','<br>','<br>']
+        for (let j = 0; j < 4; j++) {
+            if (params.blankCard[j]) {
+                switch (j) {
+                    case 0: 
+                        blankCard += 'B';
+                        tableText[0] = 'B<br>';
+                        break;
+                    case 1: 
+                        blankCard += 'R'; 
+                        tableText[1] = 'R<br>';
+                        break;
+                    case 2: 
+                        blankCard += 'G'; 
+                        tableText[2] = 'G<br>';
+                        break;
+                    case 3: 
+                        blankCard += 'Y'; 
+                        tableText[3] = 'Y';
+                        break;
+                }
+            }
+        }
+        cardIDMap.set(15, blankCard)
+        mapArr[15].innerHTML = tableText.join('')
+        mapArr[15].classList.add('blank-wild')
+    }
+    for (let i = 0; i < 16; i++) {
+        if (nullSet.includes(cardIDMap.get(i))) {
+            mapArr[i].classList.add('blackout')
+            continue;
+        }
+
+        if (!params.isAnswerMap) continue;
+        if (puzzleData.metaData.double.includes(cardIDMap.get(i))) {
+            const double = document.createElement('div')
+            double.classList.add('map-double')
+            double.innerText = '2'
+            mapArr[i].append(double)
+        }
+        let requiredCard = [puzzleData.variationsMap.get('requiredCard')] ?? []
+        if (requiredCard.includes(cardIDMap.get(i))) {
+            const star = document.createElement('div')
+            star.classList.add('map-star')
+            const starSvg = createSvg('star')
+            star.append(starSvg)
+            mapArr[i].append(star)
+        }
+        let forbiddenCard = [puzzleData.variationsMap.get('forbiddenCard')] ?? []
+        if (forbiddenCard.includes(cardIDMap.get(i))) {
+            const x = document.createElement('div')
+            x.classList.add('map-x')
+            const xSvg = createSvg('x')
+            x.append(xSvg)
+            mapArr[i].append(x)
+        }
+        if (params.setName.includes(cardIDMap.get(i))) {
+            mapArr[i].classList.toggle('map-shade');
+        }
+        if (params.restriction.includes(cardIDMap.get(i))) {
+            mapArr[i].classList.toggle('map-cross');
         }
     }
-    for (let cell of mapArr) {
-        if (cell.classList.contains('blackout')) continue;
-        cell.addEventListener('click', function() {
-            const activeTool = universeMapToolbox.querySelector('.active')
-            let activeToolID = activeTool.dataset.id
-            switch (activeToolID) {
-                case '0':
-                    this.classList.toggle('map-cross');
-                    break;
-                case '1':
-                    if (!this.classList.contains('double')) {
-                        const double = document.createElement('div')
-                        double.classList.add('map-double')
-                        double.innerText = '2'
-                        this.append(double)
-                    } else {
-                        const double = this.querySelector('.map-double')
-                        double.remove()
-                    }
-                    this.classList.toggle('double');
-                    break;
-                case '2':
-                    if (!this.classList.contains('star')) {
-                        const star = document.createElement('div')
-                        star.classList.add('map-star')
-                        const starSvg = createSvg('star')
-                        star.append(starSvg)
-                        this.append(star)
-                    } else {
-                        const star = this.querySelector('.map-star')
-                        star.remove()
-                    }
-                    this.classList.toggle('star');
-                    break;
-                case '3':
-                    if (!this.classList.contains('x')) {
-                        const x = document.createElement('div')
-                        x.classList.add('map-x')
-                        const xSvg = createSvg('x')
-                        x.append(xSvg)
-                        this.append(x)
-                    } else {
-                        const x = this.querySelector('.map-x')
-                        x.remove()
-                    }
-                    this.classList.toggle('x');
-                    break;
-                case '4':
-                    if (!this.classList.contains('circle')) {
-                        const circle = document.createElement('div')
-                        circle.classList.add('map-circle')
-                        this.append(circle)
-                    } else {
-                        const circle = this.querySelector('.map-circle')
-                        circle.remove()
-                    }
-                    this.classList.toggle('circle');
-                    break;
-                case '5':
-                    this.classList.toggle('map-shade');
-                    break;
-            }
-        })
-
+    if (!params.isAnswerMap) {
+        for (let cell of mapArr) {
+            if (cell.classList.contains('blackout')) continue;
+            cell.addEventListener('click', function() {
+                const activeTool = universeMapToolbox.querySelector('.active')
+                let activeToolID = activeTool.dataset.id
+                switch (activeToolID) {
+                    case '0':
+                        this.classList.toggle('map-cross');
+                        break;
+                    case '1':
+                        if (!this.classList.contains('double')) {
+                            const double = document.createElement('div')
+                            double.classList.add('map-double')
+                            double.innerText = '2'
+                            this.append(double)
+                        } else {
+                            const double = this.querySelector('.map-double')
+                            double.remove()
+                        }
+                        this.classList.toggle('double');
+                        break;
+                    case '2':
+                        if (!this.classList.contains('star')) {
+                            const star = document.createElement('div')
+                            star.classList.add('map-star')
+                            const starSvg = createSvg('star')
+                            star.append(starSvg)
+                            this.append(star)
+                        } else {
+                            const star = this.querySelector('.map-star')
+                            star.remove()
+                        }
+                        this.classList.toggle('star');
+                        break;
+                    case '3':
+                        if (!this.classList.contains('x')) {
+                            const x = document.createElement('div')
+                            x.classList.add('map-x')
+                            const xSvg = createSvg('x')
+                            x.append(xSvg)
+                            this.append(x)
+                        } else {
+                            const x = this.querySelector('.map-x')
+                            x.remove()
+                        }
+                        this.classList.toggle('x');
+                        break;
+                    case '4':
+                        if (!this.classList.contains('circle')) {
+                            const circle = document.createElement('div')
+                            circle.classList.add('map-circle')
+                            this.append(circle)
+                        } else {
+                            const circle = this.querySelector('.map-circle')
+                            circle.remove()
+                        }
+                        this.classList.toggle('circle');
+                        break;
+                    case '5':
+                        this.classList.toggle('map-shade');
+                        break;
+                }
+            })
+        }
     }
     // Append table to container
     const container = document.createElement('div')
@@ -435,7 +483,7 @@ function showNewPuzzleButton() {
     })
 }
 // ADD MIN AND MAX UNIVERSE
-// let puzzleParamaters = 
+// let puzzleParameters = 
 // {
 //     randomize: 
 //         false,
@@ -466,34 +514,35 @@ function showNewPuzzleButton() {
 // }
 
 // RESTRICTIONLESS PUZZLE ADD MIN AND MAX UNIVERSE
-// puzzleParamaters = 
-// {
-//     'randomize': 
+// let puzzleParameters = {
+//     randomize: 
 //         false,
-//     'setCubes': 
+//     setCubes: 
 //         [   
 //             ["R", "G", "B"],
 //             [1, 3, 5],
 //             ["'", "-", "U", "-"],
 //             ["V", "V"]
 //         ],
-//     'setUniverse':
+//     setUniverse:
 //         ['RG', 'BRY', 'RGY', 'B', 'BRG', 'Y', 'BG', '', 'BRGY', 'G', 'R', 'BY', 'RY'],
-//     'setVariations':
+//     minUniverse: 10,
+//     maxUniverse: 14,
+//     setVariations:
 //         ['symmetricDifference', 'noNull'],
-//     'setVariationsLength': 
+//     setVariationsLength: 
 //         2,
-//     'setGoal':
+//     setGoal:
 //         {
 //             'goalArr': [5, "*", 1, "*", 2],
 //             'goalValues': [10],
 //             'goalShape': 5
 //         },
-//     'setForbidden':
+//     setForbidden:
 //         {
-//             'forbiddenArrLength': 0
+//             forbiddenArrLength: 0
 //         },
-//     'forceSymmetricDifference': false,
+//     forceSymmetricDifference: false,
 // }
 
 // puzzleParameters = 
@@ -640,13 +689,13 @@ function newPuzzle() {
         puzzleData = e.data
 
         // Display Blank Wild and Solution Toggle (If Applicable)
-        blankWild = puzzleData.variations.includes('blankWild')
-        twoSolutions = puzzleData.variations.includes('twoSolutions')
-        blankWildContainer.style.display = (blankWild) ? '' : 'none'
-        solutionFormContainer.style.display = (twoSolutions) ? '' : 'none'
+        blankWildActive = puzzleData.variationsMap.get('blankWild') ?? false
+        twoSolutionsActive = puzzleData.variationsMap.get('twoSolutions') ?? false
+        blankWildContainer.style.display = (blankWildActive) ? '' : 'none'
+        solutionFormContainer.style.display = (twoSolutionsActive) ? '' : 'none'
 
         // Move solution toggle if goal is too tall
-        if (puzzleData.goalShape === 5 && twoSolutions) {
+        if (puzzleData.goalShape === 5 && twoSolutionsActive) {
             requiredContainer.parentElement.append(solutionFormContainer)
         } else {
             rightInputContainer.append(solutionFormContainer)
@@ -758,15 +807,9 @@ function newPuzzle() {
         // Determine required cubes from solutions
         let solutionScores = []
 
-        if (puzzleData.variations.includes("twoSolutions")) {
-            console.log(puzzleData.solution)
-            for (let currSolution of puzzleData.solution) {
-                if (currSolution.restriction) solutionScores.push(calcScore(currSolution.restriction, 2))
-                solutionScores.push(calcScore(currSolution.flag))
-            }
-        } else {
-            if (puzzleData.solution.restriction) solutionScores.push(calcScore(puzzleData.solution.restriction, 2))
-            solutionScores.push(calcScore(puzzleData.solution.flag));
+        for (let currSolution of puzzleData.solution) {
+            if (currSolution.restriction) solutionScores.push(calcScore(currSolution.restriction, 2))
+            solutionScores.push(calcScore(currSolution.flag))
         }
         let highStandard = solutionScores.shift()
         for (let score of solutionScores) {
@@ -868,7 +911,7 @@ function newPuzzle() {
         console.log(filterDuplicates(puzzleData.universe))
 
         // Display Map
-        mapContainer.append(createMapTable())
+        mapContainer.append(createMapTable({isAnswerMap: false}))
 
         // Display Cards
         for (let card of filterDuplicates(puzzleData.universe)) {
@@ -948,6 +991,7 @@ function newPuzzle() {
 
         mainPuzzleWorker.terminate();
 
+        // TODO: WHEN SWITCHING BETWEEN SOLUTIONS, MAKE SURE THE CURSOR GAP DISAPPEARS
         // currInput = 'restriction1'
         // inputCube('green')
         // inputCube('must-contain')
@@ -962,19 +1006,21 @@ function newPuzzle() {
         // inputCube('intersect')
         // inputCube('green')
         // inputCube('right-parenthesis')
-        // solutionFormToggleDiv.click()
-        // currInput = 'restriction2'
-        // inputCube('green')
-        // inputCube('must-contain')
-        // inputCube('yellow')
-        // currInput = "setName2"
-        // inputCube('blue')
-        // inputCube('intersect')
-        // inputCube('left-parenthesis')
-        // inputCube('green')
-        // inputCube('union')
-        // inputCube('red')
-        // inputCube('right-parenthesis')
+        // if (twoSolutionsActive) {
+        //     solutionFormToggleDiv.click()
+        //     currInput = 'restriction2'
+        //     inputCube('green')
+        //     inputCube('must-contain')
+        //     inputCube('yellow')
+        //     currInput = "setName2"
+        //     inputCube('blue')
+        //     inputCube('intersect')
+        //     inputCube('left-parenthesis')
+        //     inputCube('green')
+        //     inputCube('union')
+        //     inputCube('red')
+        //     inputCube('right-parenthesis')
+        // }
         // submitInput()
     };
 };
@@ -1135,21 +1181,22 @@ const universeSize = {
 window.onresize = resizeUniverse
 function resizeUniverse() {
     // Cards
-    const UNIVERSE_HEADER_SIZE = 50
-    const SIDE_PADDING = 42
+    const UNIVERSE_HEADER_SIZE = 40
+    const VERTICAL_PADDING = 10
+    const HORIZONTAL_PADDING = 42
     const CARD_HEIGHT = 126
     const CARD_WIDTH = 88
-    const CARDS_CONTAINER_WIDTH = Math.min(window.innerWidth * .97 * .95, universeSize.cardsWidth - SIDE_PADDING)
+    const CARDS_CONTAINER_WIDTH = Math.min(window.innerWidth * .97 * .95, universeSize.cardsWidth - HORIZONTAL_PADDING)
     let columns = Math.floor(CARDS_CONTAINER_WIDTH / CARD_WIDTH)
     let rows = Math.ceil(cardsContainer.children.length / columns)
-    universeSize.cardsHeight = rows * CARD_HEIGHT + UNIVERSE_HEADER_SIZE
+    universeSize.cardsHeight = (rows * CARD_HEIGHT) + UNIVERSE_HEADER_SIZE + VERTICAL_PADDING
     if (universeCardsToggle.dataset.active === 'true') {
         universeContainer.animate(
         [{ height: universeSize.cardsHeight + 'px' }], {
             fill: 'forwards',
         });
         cardsContainer.animate(
-            [{ width: `min(95%, ${universeSize.cardsWidth - SIDE_PADDING}px`}], {
+            [{ width: `min(95%, ${universeSize.cardsWidth - HORIZONTAL_PADDING}px`}], {
             fill: 'forwards',
         });
         universeContainer.animate(
@@ -1163,8 +1210,8 @@ let activeSolution = 'solution1';
 let keyboardActive = false;
 let currInput;
 
-let blankWild
-let twoSolutions
+let blankWildActive
+let twoSolutionsActive
 
 let puzzleData;
 let queuedPuzzleData
@@ -1368,7 +1415,7 @@ function showKeyboard(e) {
 
         currInput = (activeSolution === 'solution1') ? 'restriction1' : 'restriction2'
 
-        if (puzzleData.metaData.includes('noRestrictions')) {
+        if (puzzleData.metaData.noRestrictions) {
             notify('No Restriction Cubes Avaiable!', 'red', 'bounce', 1000, '40px', '260px')
             hideKeyboard()
             return;
@@ -1509,7 +1556,7 @@ function toggleSolution(e) {
         changeWildStyle(inputValues.wildCube.solution2)
 
         // Replace blank wild card with that from other input
-        if (blankWild) {
+        if (blankWildActive) {
             for (let i = 0; i < blankWildContainer.children.length; i++) {
                 if (inputValues.blankWild.solution2[i]) {
                     blankWildContainer.children[i].classList.remove('wild')
@@ -1570,7 +1617,7 @@ function toggleSolution(e) {
         changeWildStyle(inputValues.wildCube.solution1)
 
         // Replace blank wild card with that from other input
-        if (blankWild) {
+        if (blankWildActive) {
             for (let i = 0; i < blankWildContainer.children.length; i++) {
                 if (inputValues.blankWild.solution1[i]) {
                     blankWildContainer.children[i].classList.remove('wild')
@@ -1613,7 +1660,7 @@ function resizeNewAnswer() {
     console.log(newResult.getBoundingClientRect().width)
     console.log(newResult.getBoundingClientRect().x)
 
-    let getCard = document.querySelector(".card-set .card.double")
+    let getCard = document.querySelector(".answer-cards-container .card.double")
     if (getCard) {
         console.log(getCard)
         console.log(getCard.getBoundingClientRect().width)
@@ -1731,7 +1778,7 @@ function inputCube(cube) {
             break;
     };
 
-    if (puzzleData.metaData.includes('noRestrictions') && isRestriction) {
+    if (puzzleData.metaData.noRestrictions && isRestriction) {
         notify('No Restriction Cubes Available!', 'red', 'bounce', 1000, '40px', '260px');
         return;
     }
@@ -2779,24 +2826,23 @@ function submitInput() {
             };
         }
         
-        let calcSymmetricDifference = true;
-
+        // Pre-calculation Validation
         if (!setNameArr1.length) {
             notify('Input a Solution!', 'red', 'bounce', 1000, '', '160px'); 
             console.log('NO SOLUTION 1'); return;
-        } else if (!restrictionArr1.length && !puzzleData.metaData.includes('noRestrictions')) {
+        } else if (!restrictionArr1.length && !puzzleData.metaData.noRestrictions) {
             notify('Input a Restriction!', 'red', 'bounce', 1000, '', '170px');
             console.log('NO RESTRICTION 1'); return;
-        } else if (twoSolutions && !setNameArr2.length) {
+        } else if (twoSolutionsActive && !setNameArr2.length) {
             notify('Input a Solution!', 'red', 'bounce', 1000, '', '160px');
             console.log('NO SOLUTION 2'); return;
-        } else if (twoSolutions && !restrictionArr2.length && !puzzleData.metaData.includes('noRestrictions')) {
+        } else if (twoSolutionsActive && !restrictionArr2.length && !puzzleData.metaData.noRestrictions) {
             notify('Input a Restriction!', 'red', 'bounce', 1000, '', '170px');
             console.log('NO RESTRICTION 2'); return;
         }
         
-        if (!/[<=]/.test(restrictionArr1) || (!/[<=]/.test(restrictionArr2) && twoSolutions)) {
-            if (!puzzleData.metaData.includes('noRestrictions')) {
+        if (!/[<=]/.test(restrictionArr1) || (!/[<=]/.test(restrictionArr2) && twoSolutionsActive)) {
+            if (!puzzleData.metaData.noRestrictions) {
                 notify('Invalid Restriction!', 'red', 'bounce', 1000, '', '160px');
                 console.log('Restriction has no restriction'); return;
             }
@@ -2819,6 +2865,7 @@ function submitInput() {
             };
         };
         
+        // Prepratory functions
         console.group("SUBMITTING INPUT:")
         function translateBRGY(val) {
             switch (val) {
@@ -2841,7 +2888,7 @@ function submitInput() {
                 case "∩":
                 return val1.filter(val => val2.includes(val));
                 case "-":
-                if (puzzleData.variations.includes('symmetricDifference') && calcSymmetricDifference) {
+                if (puzzleData.variationsMap.get('symmetricDifference') && calcSymmetricDifference) {
                     return val1.filter(val => !val2.includes(val)).concat(val2.filter(val => !val1.includes(val)))
                 } else {
                     return val1.filter(val => !val2.includes(val));
@@ -2861,16 +2908,16 @@ function submitInput() {
         
         function parseInput(arr) {
             let index = [0];
-            let returnArr = [];
+            let parsedArr = [];
             for (let i = 0; i < arr.length; i++) {
-                let currPosition = returnArr
+                let currPosition = parsedArr
                 for (let i = 0; i < index.length - 1; i++) currPosition = currPosition[index[i]]
                 if (arr[i] === "(") {
                     currPosition[index[index.length - 1]] = [];
                     index.push(0)
                 } else if (arr[i] === ")") {
                     index.pop()
-                    currPosition = returnArr;
+                    currPosition = parsedArr;
                     for (let i = 0; i < index.length - 1; i++) currPosition = currPosition[index[i]]
                     currPosition[index[index.length - 1]] = calcSet(currPosition[index[index.length - 1]])
                     index[index.length - 1]++
@@ -2882,18 +2929,23 @@ function submitInput() {
                     index[index.length - 1]++
                 };
             };
-            return calcSet(returnArr);
+            return calcSet(parsedArr);
         };
         
-        // PARSING INPUTS
-        let solutionSet1 = [];
-        let solutionSet2 = [];
+        // Parsing inputs
+        let solution1Cards = [];
+        let solution1SetName = [];
+        let solution1RestrictedCards = [];
+        let solution2Cards = [];
+        let solution2SetName = [];
+        let solution2RestrictedCards = [];
+        let calcSymmetricDifference = true;
 
+        // Prepare double set
         let doubleIndex = puzzleData.variations.findIndex(val => Object.keys(val)[0] === 'double');
         let doubleSet = []
         if (doubleIndex !== -1) {
             universe = ["BRGY","BRG","BRY","BR","BGY","BG","BY","B","RGY","RG","RY","R","GY","G","Y",""];
-            let doubleIndex = puzzleData.variations.findIndex(val => Object.keys(val)[0] === 'double')
             let symmetricDifferenceIndex = puzzleData.variations.indexOf('symmetricDifference')
             console.log(doubleIndex)
             console.log(symmetricDifferenceIndex)
@@ -2902,31 +2954,40 @@ function submitInput() {
             universe = puzzleData.universe
             if (doubleIndex < symmetricDifferenceIndex) calcSymmetricDifference = true;
         }
+        // Prepare Blank Wild
+        if (blankWildActive) {
+            while (universe.includes("")) universe = deleteFirstArrItem(universe, "")
+        }
 
+        console.log('Universe/Double Set/puzzleData.metaData.double')
         console.log(universe)
         console.log(doubleSet)
-        console.log(puzzleData.metaData[0])
+        console.log(puzzleData.metaData.double)
 
+        // All input calculations happen here:
         let nullRestriction = false;
-        for (let i = 0; i <= (twoSolutions); i++) {
-            if (blankWild) {
-                while (universe.includes("")) universe = deleteFirstArrItem(universe, "")
-                let newCard = ''
+        for (let i = 0; i <= (twoSolutionsActive); i++) {
+
+            // Add blank wild cards
+            let blankWild = ''
+            if (blankWildActive) {
                 let currBlankCard = i ? inputValues.blankWild.solution2 : inputValues.blankWild.solution1;
-                for (let j = 0; j < currBlankCard.length; j++) {
+                for (let j = 0; j < 4; j++) {
                     if (currBlankCard[j]) {
                         switch (j) {
-                            case 0: newCard += "B"; break;
-                            case 1: newCard += "R"; break;
-                            case 2: newCard += "G"; break;
-                            case 3: newCard += "Y"; break;
+                            case 0: blankWild += "B"; break;
+                            case 1: blankWild += "R"; break;
+                            case 2: blankWild += "G"; break;
+                            case 3: blankWild += "Y"; break;
                         }
                     }
                 }
-                universe.push(newCard)
-                if (doubleSet.includes(newCard)) universe.push(newCard)
+                universe.push(blankWild)
+                if (doubleSet.includes(blankWild)) universe.push(blankWild)
             }
             console.log(universe)
+            
+            // Unstringify inputs and change wild cubes
             let inputRestriction;
             let inputSetName;
             switch (i) {
@@ -2945,9 +3006,12 @@ function submitInput() {
                 inputRestriction = inputRestriction.join("").replaceAll(currWild, translateName(replacement)).split("")
                 inputSetName = inputSetName.join("").replaceAll(currWild, translateName(replacement)).split("")
             }
+            console.log('inputRestriction/inputSetName')
             console.log(inputRestriction)
             console.log(inputSetName)
 
+            // Format restriction array:
+            // ['R', 'U', 'B', '<', 'B'] => [['R', 'U', 'B'], '<', ['B']]
             let formattedRestrictionArr = [[]]
             for (let i = 0; i < inputRestriction.length; i++) {
                 if (inputRestriction[i] === "<" || inputRestriction[i] === "=") {
@@ -2957,8 +3021,11 @@ function submitInput() {
                     formattedRestrictionArr[formattedRestrictionArr.length - 1].push(inputRestriction[i])
                 }
             }
+            console.log('formattedRestrictionArr')
             console.log(formattedRestrictionArr)
 
+            // Parse restriction and set names
+            // Finds cards associated with each set (ex. RUB => ['R', 'B', ...])
             let parsedRestrictionArr = []
             for (let i = 0; i < formattedRestrictionArr.length; i++) {
                 if (i % 2 === 1) {
@@ -2968,27 +3035,41 @@ function submitInput() {
                 };
             };
             let parsedSetName = parseInput(inputSetName)
-            
+            console.log('parsedRestrictionArr/parsedSetName')
             console.log(parsedRestrictionArr)
             console.log(parsedSetName)
+
+            // Parse restriction and find restricted cards
             let restrictedCards = [];
-            for (let i = 0; i < (formattedRestrictionArr.length - 1) / 2; i++) {
-                let operation = parsedRestrictionArr[i * 2 + 1];
-                let leftVal = parsedRestrictionArr[i * 2];
-                let rightVal = parsedRestrictionArr[i * 2 + 2];
+            for (let j = 0; j < (formattedRestrictionArr.length - 1) / 2; j++) {
+                let operation = parsedRestrictionArr[j * 2 + 1];
+                let leftVal = parsedRestrictionArr[j * 2];
+                let rightVal = parsedRestrictionArr[j * 2 + 2];
                 restrictedCards = restrictedCards.concat(leftVal.filter(val => !rightVal.includes(val)))
                 if (operation === "=") restrictedCards = restrictedCards.concat(rightVal.filter(val => !leftVal.includes(val)))
             }
-            console.log(restrictedCards)
-            if (!restrictedCards.length && !puzzleData.metaData.includes('noRestrictions')) nullRestriction = true;
-            if (i) {
-                solutionSet2 = parsedSetName.filter(val => !restrictedCards.includes(val))
-            } else {
-                solutionSet1 = parsedSetName.filter(val => !restrictedCards.includes(val))
+            if (!restrictedCards.length && !puzzleData.metaData.noRestrictions) nullRestriction = true;
+            
+            // Remove blank wild from universe for next set
+            if (blankWildActive) {
+                universe = deleteFirstArrItem(universe, blankWild)
+                if (doubleSet.includes(blankWild)) universe = deleteFirstArrItem(universe, blankWild)
+            }
+
+            // Apply restricted cards to set name and return
+            if (i === 0) {
+                solution1SetName = parsedSetName
+                solution1RestrictedCards = restrictedCards
+                solution1Cards = parsedSetName.filter(val => !restrictedCards.includes(val))
+            } else if (i === 1) {
+                solution2SetName = parsedSetName
+                solution2RestrictedCards = restrictedCards
+                solution2Cards = parsedSetName.filter(val => !restrictedCards.includes(val))
             }
         }
-        console.log(solutionSet1)
-        console.log(solutionSet2)
+        console.log('solution1Cards/solution2Cards')
+        console.log(solution1Cards)
+        console.log(solution2Cards)
         
         // Displaying Answer
         newResult.innerHTML = ''
@@ -3023,15 +3104,15 @@ function submitInput() {
 
             title = 'Incorrect:'
 
-            if (!puzzleData.goalValues.includes(solutionSet1.length)) {
+            if (!puzzleData.goalValues.includes(solution1Cards.length)) {
                 paragraph = `Solution does not evaluate to goal.`
                 return;
-            } else if (!puzzleData.goalValues.includes(solutionSet2.length) && twoSolutions) {
+            } else if (!puzzleData.goalValues.includes(solution2Cards.length) && twoSolutionsActive) {
                 paragraph = `Solution does not evaluate to goal.`
                 return;
             };
 
-            if (nullRestriction && puzzleData.variations.includes('noNull')) { // NO NULL
+            if (nullRestriction && puzzleData.variationsMsp.get('noNull')) { // NO NULL
                 paragraph = `Null Restriction.`
                 return;
             }
@@ -3055,12 +3136,12 @@ function submitInput() {
                 return score;
             };
 
-            if (puzzleData.variationsMap.get('requiredCube')) { // REQUIRED CUBE
+            if (puzzleData.variationsMap.get('requiredCube')) { // Required Cube
                 if (restrictionArr1.concat(setNameArr1).indexOf(puzzleData.variationsMap.get('requiredCube')) === -1) {
                     paragraph = `Solution does not contain required cube`
                     return;
                 };
-                if (twoSolutions) {
+                if (twoSolutionsActive) {
                     if (restrictionArr2.concat(setNameArr2).indexOf(puzzleData.variationsMap.get('requiredCube')) === -1) {
                         paragraph = `Solution does not contain required cube`
                         return;
@@ -3070,7 +3151,7 @@ function submitInput() {
 
             console.log(requiredContainer.dataset.values)
             console.log(resourcesContainer.dataset.values)
-            for (let i = 1; i <= (twoSolutions ? 4 : 2); i++) {
+            for (let i = 1; i <= (twoSolutionsActive ? 4 : 2); i++) {
 
                 let currWild = (i <= 2) ? inputValues.wildCube.solution1 : inputValues.wildCube.solution2
                 console.log(currWild)
@@ -3085,12 +3166,12 @@ function submitInput() {
                 let input
                 switch (i) {
                     case 1:
-                        if (puzzleData.metaData.includes('noRestrictions')) continue;
+                        if (puzzleData.metaData.noRestrictions) continue;
                         input = restrictionArr1; 
                         break;
                     case 2: input = setNameArr1; break;
                     case 3:
-                        if (puzzleData.metaData.includes('noRestrictions')) continue;
+                        if (puzzleData.metaData.noRestrictions) continue;
                         input = restrictionArr2; 
                         break;
                     case 4: input = setNameArr2; break;
@@ -3127,13 +3208,13 @@ function submitInput() {
                                 let arr = []
                                 if (input.includes("V")) arr.push('"Universe"')
                                 if (input.includes("Ʌ")) arr.push('"Empty-Set"')
-                                extraCube = arr[getRandomNumber(0, arr.length - 1)];
+                                extraCube = arr[getRandomInt(0, arr.length - 1)];
                                 break;
                             case 5:
                                 let arr2 = []
                                 if (input.includes("U")) arr2.push('"Or"')
                                 if (input.includes("∩")) arr2.push('"And"')
-                                extraCube = arr2[getRandomNumber(0, arr2.length - 1)];
+                                extraCube = arr2[getRandomInt(0, arr2.length - 1)];
                                 break;
                             case 6: extraCube = '"Minus"'
                             case 7: extraCube = '"Not"'
@@ -3149,23 +3230,27 @@ function submitInput() {
                 };
             };
 
-        if (solutionSet1 === solutionSet2) {
+        if (solution1Cards === solution2Cards) {
             paragraph = `Both solutions cannot contain the same cards.`
             return;
         }
 
-        if (puzzleData.variations.includes('requiredCard')) {
-            if (!solutionSet1.includes(getVariation('requiredCard'))) {
+        if (puzzleData.variationsMap.get('requiredCard') !== undefined) {
+            if (!solution1Cards.includes(puzzleData.variationsMap.get('requiredCard'))) {
                 paragraph = `Solution does not contain required card.`
                 return;
             };
-            if (twoSolutions && !solutionSet2.includes(getVariation('requiredCard'))) {
+            if (twoSolutionsActive && !solution2Cards.includes(puzzleData.variationsMap.get('requiredCard'))) {
                 paragraph = `Solution does not contain required card.`
                 return;
             };
         };
-        if (puzzleData.variations.includes('forbiddenCard')) {
-            if (solutionSet1.includes(getVariation('forbiddenCard')) || solutionSet2.includes(getVariation('forbiddenCard'))) {
+        if (puzzleData.variationsMap.get('forbiddenCard') !== undefined) {
+            if (solution1Cards.includes(puzzleData.variationsMap.get('forbiddenCard'))) {
+                paragraph = `Solution contains forbidden card.`
+                return;
+            };
+            if (twoSolutionsActive && solution2Cards.includes(puzzleData.variationsMap.get('forbiddenCard'))) {
                 paragraph = `Solution contains forbidden card.`
                 return;
             };
@@ -3195,7 +3280,7 @@ function submitInput() {
 
         // Toggle (2 Solutions)
         
-        if (twoSolutions) {
+        if (twoSolutionsActive) {
 
             const answerToggleContainer = document.createElement('div')
             answerToggleContainer.id = 'answer-toggle-container-1'
@@ -3245,9 +3330,11 @@ function submitInput() {
                     for (let node of inputValues.wrap.setNameArr2.elements.flat()) {
                         inputAnswerCube(inputSetName, node, inputValues.wildCube.solution2)
                     }
-                    evaluationParagraph.innerText = `Your solution evaluates to ${solutionSet2.length} cards:`
+                    evaluationParagraph.innerText = `Your solution evaluates to ${solution2Cards.length} cards:`
                     inputCardSet.innerHTML = ''
                     for (let node of inputCardsArr[1]) inputCardSet.append(node)
+                    inputMapContainer.innerHTML = ''
+                    inputMapContainer.append(inputMapsArr[1])
                 } else {
                     // Clicked on left toggle
                     answerLeftToggle.dataset.active = 'true'
@@ -3260,9 +3347,11 @@ function submitInput() {
                     for (let node of inputValues.wrap.setNameArr1.elements.flat()) {
                         inputAnswerCube(inputSetName, node, inputValues.wildCube.solution1)
                     }
-                    evaluationParagraph.innerText = `Your solution evaluates to ${solutionSet1.length} cards:`
+                    evaluationParagraph.innerText = `Your solution evaluates to ${solution1Cards.length} cards:`
                     inputCardSet.innerHTML = ''
                     for (let node of inputCardsArr[0]) inputCardSet.append(node)
+                    inputMapContainer.innerHTML = ''
+                    inputMapContainer.append(inputMapsArr[0])
                 }
 
             })
@@ -3278,7 +3367,20 @@ function submitInput() {
         }
 
         // Inputted Solution
-
+        function stringArr(string) {
+            let newString
+            for (let i = 0; i < string.length; i++) {
+                if (string.charAt(i) === '(') {
+                    newString += '['
+                } else if (string.charAt(i) === ')') {
+                    newString += ']'
+                } else {
+                    newString += `"${string.charAt(i)}"`
+                    if (string.charAt(i + 1) !== ')') newString += ','
+                }
+            }
+            return newString;
+        }
         function inputAnswerCube(input, cube, currWild) {
             cube.style.left = '0px'
             cube.style.top = '0px'
@@ -3305,7 +3407,7 @@ function submitInput() {
         for (let node of inputValues.wrap.setNameArr1.elements.flat()) {
             inputAnswerCube(inputSetName, node, inputValues.wildCube.solution1)
         }
-        if (!puzzleData.metaData.includes('noRestrictions')) {
+        if (!puzzleData.metaData.noRestrictions) {
             inputSolutionContainer.append(inputRestriction)
             inputSolutionContainer.append(bar)
         }
@@ -3314,19 +3416,26 @@ function submitInput() {
 
         const evaluationParagraph = document.createElement('p')
         evaluationParagraph.id = 'evaluation-paragraph'
-        evaluationParagraph.innerText = `Your solution evaluates to ${solutionSet1.length} cards:`
+        evaluationParagraph.innerText = `Your solution evaluates to ${solution1Cards.length} cards:`
         answerContent.append(evaluationParagraph)
         
+        // Input Universe (Cards/Map)
+        const inputUniverse = document.createElement('div')
+        inputUniverse.classList.add('answer-universe-container')
+        answerContent.append(inputUniverse)
+
         // Input Cards
         let inputCardsArr = [[], []]
         const inputCardSet = document.createElement('div')
-        inputCardSet.classList.add('card-set')
-        for (let i = 0; i <= (twoSolutions); i++) {
-            let solutionSet = i ? solutionSet2 : solutionSet1;
+        inputCardSet.classList.add('answer-cards-container')
+        for (let i = 0; i <= (twoSolutionsActive); i++) {
+
+            let solutionSet = i ? solution2Cards : solution1Cards;
             for (let card of cardsContainer.children) {
+
                 const newCard = card.cloneNode(true);
                 newCard.classList.remove('flip')
-                if (blankWild && newCard.dataset.getCard === "") {
+                if (blankWildActive && newCard.dataset.getCard === "") {
                     let blankWildCard = i ? inputValues.blankWild.solution2 : inputValues.blankWild.solution1
                     for (let j = 0; j < blankWildCard.length; j++) {
                         if (blankWildCard[j]) {
@@ -3364,22 +3473,117 @@ function submitInput() {
             };
         };
         for (let node of inputCardsArr[0]) inputCardSet.append(node)
-        answerContent.append(inputCardSet)
+        inputUniverse.append(inputCardSet)
+
+        // Input Map
+        let inputMapsArr = []
+        const inputMapContainer = document.createElement('div')
+        inputMapContainer.classList.add('answer-map-container')
+        for (let i = 0; i <= (twoSolutionsActive); i++) {
+            if (i === 0) {
+                inputMapsArr[0] = createMapTable({
+                    isAnswerMap: true,
+                    setName: solution1SetName,
+                    restriction: solution1RestrictedCards,
+                    blankCard: inputValues.blankWild.solution1
+                })
+            } else if (i === 1) {
+                inputMapsArr[1] = createMapTable({
+                    isAnswerMap: true,
+                    setName: solution2SetName,
+                    restriction: solution2RestrictedCards,
+                    blankCard: inputValues.blankWild.solution2
+                })
+            }
+        }
+        inputMapContainer.append(inputMapsArr[0])
+        inputUniverse.append(inputMapContainer)
 
         // Separate Answer
         const horizontalRule = document.createElement('hr')
         horizontalRule.style.cssText = 'width: 80%;'
         answerContent.append(horizontalRule)
         
-        // Defined Title
+        // Computer Title
         const titleNode2 = document.createElement('h2')
         titleNode2.innerText = 'Solution'
         answerContent.append(titleNode2)
 
         console.log(puzzleData)
 
-        // Defined toggle
-        if (twoSolutions) {
+        // Calculate Computer Answer
+        let computer1SetName
+        let computer1RestrictedCards
+        let computer1Cards
+        let computer2SetName
+        let computer2RestrictedCards
+        let computer2Cards
+        for (let i = 0; i <= (twoSolutionsActive); i++) {
+            
+            // Get computer inputs
+            let computerRestriction = puzzleData.solution[i].restriction ?? [];
+            let computerSetName = puzzleData.solution[i].flag;
+            console.log('computerRestriction/computerSetName')
+            console.log(computerRestriction)
+            console.log(computerSetName)
+
+            // Add blank wild cards
+            let blankWild = ''
+            if (blankWildActive) {
+                blankWild = puzzleData.solution[i].blankCard ?? ''
+                universe.push(blankWild)
+                if (doubleSet.includes(blankWild)) universe.push(blankWild)
+            }
+
+            // Parse restriction and set names
+            // Finds cards associated with each set (ex. RUB => ['R', 'B', ...])
+            let parsedRestrictionArr = []
+            for (let i = 0; i < computerRestriction.length; i++) {
+                if (i % 2 === 1) {
+                    parsedRestrictionArr.push(computerRestriction[i]);
+                } else {
+                    parsedRestrictionArr.push(parseInput(computerRestriction[i]));
+                };
+            };
+            let parsedSetName = parseInput(computerSetName)
+            console.log('parsedRestrictionArr/parsedSetName')
+            console.log(parsedRestrictionArr)
+            console.log(parsedSetName)
+
+            // Parse restriction and find restricted cards
+            let restrictedCards = [];
+            for (let j = 0; j < (parsedRestrictionArr.length - 1) / 2; j++) {
+                let operation = parsedRestrictionArr[j * 2 + 1];
+                let leftVal = parsedRestrictionArr[j * 2];
+                let rightVal = parsedRestrictionArr[j * 2 + 2];
+                restrictedCards = restrictedCards.concat(leftVal.filter(val => !rightVal.includes(val)))
+                if (operation === "=") restrictedCards = restrictedCards.concat(rightVal.filter(val => !leftVal.includes(val)))
+            }
+            
+            // Remove blank wild from universe for next set
+            if (blankWildActive) {
+                universe = deleteFirstArrItem(universe, blankWild)
+                if (doubleSet.includes(blankWild)) universe = deleteFirstArrItem(universe, blankWild)
+            }
+            
+            // Apply restricted cards to set name and return
+            if (i === 0) {
+                computer1SetName = parsedSetName
+                computer1RestrictedCards = restrictedCards
+                computer1Cards = parsedSetName.filter(val => !restrictedCards.includes(val))
+            } else if (i === 1) {
+                computer2SetName = parsedSetName
+                computer2RestrictedCards = restrictedCards
+                computer2Cards = parsedSetName.filter(val => !restrictedCards.includes(val))
+            }
+        }
+
+        console.log('computer1Cards/computer2Cards')
+        console.log(computer1Cards)
+        console.log(computer2Cards)
+
+        // Computer toggle
+        if (twoSolutionsActive) {
             const answerToggleContainer = document.createElement('div');
             answerToggleContainer.id = 'answer-toggle-container-1'
             answerToggleContainer.classList.add('answer-toggle-container');
@@ -3407,6 +3611,8 @@ function submitInput() {
                     for (let node of computerValueNodes[1][1]) computerSetName.append(node);
                     computerCardSet.innerHTML = ''
                     for (let node of computerCardsArr[1]) computerCardSet.append(node);
+                    computerMapContainer.innerHTML = ''
+                    computerMapContainer.append(computerMapsArr[1])
                 } else {
                     // Clicked on first toggle
                     answerLeftToggle.dataset.active = 'true'
@@ -3417,6 +3623,8 @@ function submitInput() {
                     for (let node of computerValueNodes[0][1]) computerSetName.append(node);
                     computerCardSet.innerHTML = ''
                     for (let node of computerCardsArr[0]) computerCardSet.append(node);
+                    computerMapContainer.innerHTML = ''
+                    computerMapContainer.append(computerMapsArr[0])
                 };
             });
             answerToggleContainer.append(answerLeftToggle, answerRightToggle, answerToggleDiv);
@@ -3431,27 +3639,17 @@ function submitInput() {
 
         const computerValueNodes = [[[], []], [[], []]]
 
-        for (let i = 0; i <= twoSolutions; i++) {
+        for (let i = 0; i <= twoSolutionsActive; i++) {
             for (let j = 0; j < 2; j++) {
 
                 // Set loop for all solutions and flags
                 let currIterable
-                if (twoSolutions) {
-                    if (j) {
-                        currIterable = puzzleData.solution[i].flag;
-                    } else if (puzzleData.solution[i].restriction) {
-                        currIterable = puzzleData.solution[i].restriction.join("");
-                    };
-                } else {
-                    if (j) {
-                        currIterable = puzzleData.solution.flag;
-                    } else if (puzzleData.solution.restriction) {
-                        currIterable = puzzleData.solution.restriction.join("");
-                    };
-                }
-                if (!currIterable) {
-                    continue;
-                }
+                if (j) {
+                    currIterable = puzzleData.solution[i].flag;
+                } else if (puzzleData.solution[i].restriction) {
+                    currIterable = puzzleData.solution[i].restriction.join("");
+                };
+                if (!currIterable) continue;
 
                 // Place cubes in display
                 for (let k = 0; k < currIterable.length; k++) {
@@ -3482,26 +3680,31 @@ function submitInput() {
 
         for (let node of computerValueNodes[0][0]) computerRestriction.append(node);
         for (let node of computerValueNodes[0][1]) computerSetName.append(node);
-        if (!puzzleData.metaData.includes("noRestrictions")) {
+        if (!puzzleData.metaData.noRestrictions) {
             computerSolutionContainer.append(computerRestriction)
             computerSolutionContainer.append(bar.cloneNode())
         }
         computerSolutionContainer.append(computerSetName)
         answerContent.append(computerSolutionContainer)
-        
+
+        // Computer Universe
+        const computerUniverse = document.createElement('div')
+        computerUniverse.classList.add('answer-universe-container')
+        answerContent.append(computerUniverse)
+
         // Computer Cards
         const computerCardSet = document.createElement('div')
-        computerCardSet.classList.add('card-set')
+        computerCardSet.classList.add('answer-cards-container')
         let computerCardsArr = [[], []]
-        console.log(twoSolutions)
-        for (let i = 0; i <= (twoSolutions); i++) {
-            let solutionSet = twoSolutions ? puzzleData.solution[i].cards : puzzleData.solution.cards
+        
+        for (let i = 0; i <= (twoSolutionsActive); i++) {
+            let solutionSet = puzzleData.solution[i].cards
             i ? puzzleData.solution[1] : puzzleData.solution[0]
             for (let card of cardsContainer.children) {
                 const newCard = card.cloneNode(true);
                 newCard.classList.remove('flip')
-                let blankWildCard = twoSolutions ? puzzleData.solution[i].blankCard : puzzleData.solution.blankCard;
-                if (blankWild && newCard.dataset.getCard === "" && blankWildCard) {
+                let blankWildCard = puzzleData.solution[i].blankCard
+                if (blankWildActive && newCard.dataset.getCard === "" && blankWildCard) {
                     newCard.dataset.getCard = blankWildCard;
                     for (let i = 0; i < blankWildCard.length; i++) {
                         switch (blankWildCard.charAt(i)) {
@@ -3525,10 +3728,41 @@ function submitInput() {
             };
         };
         for (let node of computerCardsArr[0]) computerCardSet.append(node)
-        answerContent.append(computerCardSet)
+        computerUniverse.append(computerCardSet)
+
+        // Computer Map
+        let computerMapsArr = []
+        const computerMapContainer = document.createElement('div')
+        computerMapContainer.classList.add('answer-map-container')
+        for (let i = 0; i <= (twoSolutionsActive); i++) {
+            let blankCard = [false, false, false, false]
+            if (blankWildActive) {
+                let currBlankCard = puzzleData.solution[i].blankCard ?? ''
+                if (/B/.test(currBlankCard)) blankCard[0] = true
+                if (/R/.test(currBlankCard)) blankCard[1] = true
+                if (/G/.test(currBlankCard)) blankCard[2] = true
+                if (/Y/.test(currBlankCard)) blankCard[3] = true
+            }
+            if (i === 0) {
+                computerMapsArr[0] = createMapTable({
+                    isAnswerMap: true,
+                    setName: computer1SetName,
+                    restriction: computer1RestrictedCards,
+                    blankCard: blankCard
+                })
+            } else if (i === 1) {
+                computerMapsArr[1] = createMapTable({
+                    isAnswerMap: true,
+                    setName: computer2SetName,
+                    restriction: computer2RestrictedCards,
+                    blankCard: blankCard
+                })
+            }
+        }
+        computerMapContainer.append(computerMapsArr[0])
+        computerUniverse.append(computerMapContainer)
 
         newResult.append(answerContent)
-    
         resultBackground.classList.toggle('shown')
         newResult.classList.toggle('shown')
     } catch (error) {
@@ -3584,7 +3818,6 @@ function applySettings(e) {
             settings.genNewPuzzle = false
         }
         
-        // if (settings)
     }
 
     settingsContainer.classList.remove('shown')
