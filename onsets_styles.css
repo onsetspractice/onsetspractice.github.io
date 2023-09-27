@@ -175,7 +175,7 @@ header h1 {
     border-left: 1px solid gray;
 }
 #settings-header h4, #settings-nav-button {
-    transition: opacity 200ms ease-in-out;
+    transition: opacity 150ms ease-in-out;
     margin: 0;
     user-select: none;
     -webkit-user-select: none;
@@ -1503,7 +1503,7 @@ header h1 {
     font-size: 1.17em;
 }
 
-#evaluation-paragraph {
+.evaluation-paragraph {
     color: rgb(116, 116, 116);
     font-size: 14px !important;
     margin: 6px 0px 18px;

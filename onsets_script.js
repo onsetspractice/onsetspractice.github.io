@@ -1692,8 +1692,13 @@ resultBackground.addEventListener('click', function(){
 })
 
 document.addEventListener('keydown', function(keypress){
+
+    // Apply settings if settings container active
+    if (settingsContainer.classList.contains('shown')) {
+        applySettings()
+    }
+
     // Input cube on keypress when keyboard is active
-    
     if (!currInput) return;
     if (keypress.key === 'ArrowLeft' || keypress.key === 'ArrowRight') {
         moveCursor(keypress.key)
@@ -1714,6 +1719,7 @@ document.addEventListener('keydown', function(keypress){
         case '(': inputCube('left-parenthesis'); break;
         case ')': inputCube('right-parenthesis'); break;
         case 'Backspace': inputCube('backspace'); break;
+        case 'Enter': submitInput(); break;
     };
 });
 
@@ -3414,8 +3420,9 @@ function submitInput() {
         inputSolutionContainer.append(inputSetName)
         answerContent.append(inputSolutionContainer)
 
+        // Input Paragraph
         const evaluationParagraph = document.createElement('p')
-        evaluationParagraph.id = 'evaluation-paragraph'
+        evaluationParagraph.classList.add('evaluation-paragraph')
         evaluationParagraph.innerText = `Your solution evaluates to ${solution1Cards.length} cards:`
         answerContent.append(evaluationParagraph)
         
@@ -3609,6 +3616,7 @@ function submitInput() {
                     computerSetName.innerHTML = ''
                     for (let node of computerValueNodes[1][0]) computerRestriction.append(node);
                     for (let node of computerValueNodes[1][1]) computerSetName.append(node);
+                    computerParagraph.innerText = `Solution evaluates to ${computer2Cards.length} cards:`
                     computerCardSet.innerHTML = ''
                     for (let node of computerCardsArr[1]) computerCardSet.append(node);
                     computerMapContainer.innerHTML = ''
@@ -3621,6 +3629,7 @@ function submitInput() {
                     computerSetName.innerHTML = ''
                     for (let node of computerValueNodes[0][0]) computerRestriction.append(node);
                     for (let node of computerValueNodes[0][1]) computerSetName.append(node);
+                    computerParagraph.innerText = `Solution evaluates to ${computer1Cards.length} cards:`
                     computerCardSet.innerHTML = ''
                     for (let node of computerCardsArr[0]) computerCardSet.append(node);
                     computerMapContainer.innerHTML = ''
@@ -3686,6 +3695,12 @@ function submitInput() {
         }
         computerSolutionContainer.append(computerSetName)
         answerContent.append(computerSolutionContainer)
+
+        // Computer Paragraph
+        const computerParagraph = document.createElement('p')
+        computerParagraph.classList.add('evaluation-paragraph')
+        computerParagraph.innerText = `Solution evaluates to ${computer1Cards.length} cards:`
+        answerContent.append(computerParagraph)
 
         // Computer Universe
         const computerUniverse = document.createElement('div')
@@ -3765,6 +3780,7 @@ function submitInput() {
         newResult.append(answerContent)
         resultBackground.classList.toggle('shown')
         newResult.classList.toggle('shown')
+        
     } catch (error) {
         console.log(error)
         notify('Invalid input!', 'red', 'bounce', 1500, '', '')

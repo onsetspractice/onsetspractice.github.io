@@ -483,7 +483,7 @@ onmessage = (e) => {
                         case "requiredCube": variationsArr.push({"requiredCube": variationInput("requiredcube")}); break;
                         // case "requiredCube": variationsArr.push({"requiredCube": "R"}); break;
                         case "wild": variationsArr.push({"wild": variationInput("wild")}); break;
-                        // case "wild": variationsArr.push({"wild": "R"}); break;
+                        // case "wild": variationsArr.push({"wild": "Y"}); break;
                         case "twoOp": variationsArr.push("twoOp"); break;
                         case "shiftPermitted": variationsArr.push('shiftPermitted'); break;
                         case "noNull": variationsArr.push("noNull"); noNull = true; break;
@@ -492,6 +492,7 @@ onmessage = (e) => {
                         // case "double": variationsArr.push({"double": "(B-R)'"})
                         // double = ["BR", "BRY", "BRG", "BRGY", "RG", "RGY", "R", "GY", "Y", "G", "RY", '']; break;
                         case "requiredCard": variationsArr.push({"requiredCard": variationInput("requiredcard")}); break;
+                        // case "requiredCard": variationsArr.push({"requiredCard": 'Y'}); break;
                         case "forbiddenCard": variationsArr.push({"forbiddenCard": variationInput("forbiddencard")}); break;
                         case "blankWild":
                             variationsArr.push("blankWild");
@@ -576,7 +577,6 @@ onmessage = (e) => {
             while (variationsArr.length < variationLength) {
                 i++
                 let roll = getRandomInt(1, 11);
-                // if (i === 1) roll = 10;
                 switch (roll) {
                     case 1:
                         if (!containsVariation("requiredCube")) {
@@ -934,6 +934,7 @@ onmessage = (e) => {
                 let tempValuesArr = modifiedCubesArr[0].concat(modifiedCubesArr[3].filter(val => val === "V" || val === "Ʌ"));
                 
                 let toPush = randomArrayValue(tempValuesArr);
+                // let toPush = ['Y', 'B' ,'R'][i]
                 forbiddenArr.push(toPush);
                 if (toPush === "V" || toPush === "Ʌ") {
                     modifiedCubesArr[3] = deleteFirstArrItem(modifiedCubesArr[3], toPush);
@@ -1296,21 +1297,17 @@ onmessage = (e) => {
                                         let availableCards = [];
                                         switch (goalDeviation) {
                                             case -2:
-                                                if (permCards.includes("") || !double) continue;
+                                                if (permCards.includes('') || !double) continue;
                                                 availableCards = permCards.filter(val => double.includes(val));
                                                 if (forbiddenCard !== undefined) availableCards.filter(val => val !== forbiddenCard)
                                                 blankCard = randomArrayValue(availableCards);
                                                 if (blankCard) skip = true; break;
                                             case -1: 
                                                 availableCards = permCards;
-                                                if (permCards.includes("")) {
-                                                    if (double) {
-                                                        if (double && !double.includes("")) {
-                                                            availableCards = availableCards.filter(val => double.includes(val));
-                                                        } else {
-                                                            continue;
-                                                        }
-                                                    }
+                                                if (permCards.includes('')) {
+                                                    if (!double) continue;
+                                                    if (double.includes('')) continue;
+                                                    availableCards = availableCards.filter(val => double.includes(val));
                                                 } else if (double) {
                                                     availableCards = availableCards.filter(val => !double.includes(val))
                                                 };
@@ -1318,9 +1315,9 @@ onmessage = (e) => {
                                                 blankCard = randomArrayValue(availableCards);
                                                 if (blankCard) skip = true; break;
                                             case 1:
-                                                if (!permCards.includes("")) continue;
+                                                if (!permCards.includes('')) continue;
                                                 if (double) {
-                                                    if (double.includes("")) {
+                                                    if (double.includes('')) {
                                                         availableCards = permCards.filter(val => !double.includes(val))
                                                     } else {
                                                         availableCards = universeArr.filter(val => !(permCards.includes(val)));
@@ -1328,14 +1325,15 @@ onmessage = (e) => {
                                                 };
                                                 if (forbiddenCard !== undefined) availableCards.filter(val => val !== forbiddenCard)
                                                 blankCard = randomArrayValue(availableCards);
-                                                permCards = permCards.filter(val => val !== "")
+                                                permCards = permCards.filter(val => val !== '')
                                                 if (blankCard) skip = true; break;
                                             case 2:
-                                                if (!permCards.includes("")) continue;
+                                                if (!permCards.includes('') || !double) continue;
+                                                if (!double.includes('')) continue
                                                 availableCards = universeArr.filter(val => !(permCards.includes(val)));
                                                 if (forbiddenCard !== undefined) availableCards.filter(val => val !== forbiddenCard)
                                                 blankCard = randomArrayValue(availableCards);
-                                                permCards = permCards.filter(val => val !== "")
+                                                permCards = permCards.filter(val => val !== '')
                                                 if (blankCard) skip = true; break;
                                         };
                                         if (skip) break;
