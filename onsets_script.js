@@ -1699,6 +1699,12 @@ document.addEventListener('keydown', function(keypress){
         applySettings()
     }
 
+    // Hide wild cube if it is open
+    if (wildPickerContainer.classList.contains('shown')) {
+        hideWildPicker()
+        return;
+    }
+
     // Input cube on keypress when keyboard is active
     if (!currInput) return;
     if (keypress.key === 'ArrowLeft' || keypress.key === 'ArrowRight') {
@@ -3658,8 +3664,43 @@ function submitInput() {
                     currIterable = puzzleData.solution[i].flag;
                 } else if (puzzleData.solution[i].restriction) {
                     currIterable = puzzleData.solution[i].restriction.join("");
+                    if (!currIterable) continue;
                 };
-                if (!currIterable) continue;
+
+                // Remove redundant parenthesis
+                let unionRegex1 = /\(([BRGYVɅ]'?|\(.+\)'?)U([BRGYVɅ]'?|\(.+\)'?)\)U([BRGYVɅ]|\(.+\)'?)/g
+                let unionRegex2 = /([BRGYVɅ]'?|\(.+\)'?)U\(([BRGYVɅ]'?|\(.+\)'?)U([BRGYVɅ]'?|\(.+\)'?)\)(?!')/g
+                let intersectRegex1 = /\(([BRGYVɅ]'?|\(.+\)'?)∩([BRGYVɅ]'?|\(.+\)'?)\)∩([BRGYVɅ]|\(.+\)'?)/g
+                let intersectRegex2 = /([BRGYVɅ]'?|\(.+\)'?)∩\(([BRGYVɅ]'?|\(.+\)'?)∩([BRGYVɅ]'?|\(.+\)'?)\)(?!')/g
+                let symDiffRegex1 = /\(([BRGYVɅ]'?|\(.+\)'?)-([BRGYVɅ]'?|\(.+\)'?)\)-([BRGYVɅ]|\(.+\)'?)/g
+                let symDiffRegex2 = /([BRGYVɅ]'?|\(.+\)'?)-\(([BRGYVɅ]'?|\(.+\)'?)-([BRGYVɅ]'?|\(.+\)'?)\)(?!')/g
+                let cases = (puzzleData.variationsMap.get('symmetricDifference')) ? 6 : 4
+                let oldIterable
+                do {
+                    oldIterable = currIterable
+                    for (let i = 0; i < cases; i++) {
+                        let regex
+                        switch (i) {
+                            case 0: regex = unionRegex1; break;
+                            case 1: regex = unionRegex2; break;
+                            case 2: regex = intersectRegex1; break;
+                            case 3: regex = intersectRegex2; break;
+                            case 4: regex = symDiffRegex1; break;
+                            case 5: regex = symDiffRegex2; break;
+                        }
+                        currIterable = currIterable.replace(regex, function(match) {
+                            let captureGroups = regex.exec(match)
+                            if (!captureGroups) return match;
+                            if (i === 0 || i === 1) {
+                                return `${captureGroups[1]}U${captureGroups[2]}U${captureGroups[3]}`
+                            } else if (i === 2 || i === 3) {
+                                return `${captureGroups[1]}∩${captureGroups[2]}∩${captureGroups[3]}`
+                            } else if (i === 4 || i === 5) {
+                                return `${captureGroups[1]}-${captureGroups[2]}-${captureGroups[3]}`
+                            }
+                        });
+                    }
+                } while (oldIterable !== currIterable)
 
                 // Place cubes in display
                 for (let k = 0; k < currIterable.length; k++) {
@@ -3715,7 +3756,6 @@ function submitInput() {
         
         for (let i = 0; i <= (twoSolutionsActive); i++) {
             let solutionSet = puzzleData.solution[i].cards
-            i ? puzzleData.solution[1] : puzzleData.solution[0]
             for (let card of cardsContainer.children) {
                 const newCard = card.cloneNode(true);
                 newCard.classList.remove('flip')
@@ -3917,7 +3957,7 @@ menuBackground.addEventListener('click', (e) => {applySettings()})
 
 settingsIcon.addEventListener('click', (e) => {
     if (wildPickerContainer.classList.contains('shown')) {
-        hideWildPicker(e)
+        hideWildPicker()
         return;
     }
     e.stopPropagation()
@@ -4188,7 +4228,7 @@ function toggleWildPicker(e) {
 }
 
 function hideWildPicker(e) {
-    e.stopPropagation()
+    if (e) e.stopPropagation()
     let activeCube = document.querySelector('.wild-cube.active')
     if (activeCube) activeCube.classList.remove('active')
     wildPickerContainer.classList.remove('shown')

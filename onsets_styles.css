@@ -366,7 +366,7 @@ header h1 {
 }
 
 .cube:hover {filter: brightness(98%); transition: filter 0s}
-.cube:active {filter: brightness(96%)}
+/* .cube:active {filter: brightness(96%)} */
 .cube.hidden {
     opacity: 0;
 }
