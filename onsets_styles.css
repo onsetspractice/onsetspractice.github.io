@@ -192,10 +192,10 @@ header h1 {
     position: relative;
     display: flex;
     flex: auto;
-    transition: translate 220ms ease;
+    transition: transform 220ms ease;
 }
 #settings-nodes-container.page-2 {
-    translate: -100%;
+    transform: translateX(-100%);
 }
 #settings-nodes-container ul {
     margin: 0;
@@ -209,7 +209,7 @@ header h1 {
 }
 .settings-page-2 {
     display: none;
-    translate: 100%;
+    transform: translateX(100%);
     border-radius: 8px;
 }
 .settings-page-2.active {
@@ -1011,6 +1011,8 @@ header h1 {
     height: 50px;
     position: relative;
     text-align: left;
+    transition: 100ms ease;
+
 }
 .map-table td.map-hover-event:not(.blackout):hover {
     cursor: pointer;
@@ -1073,6 +1075,7 @@ header h1 {
     align-items: center;
     height: 116px;
     width: 78px;
+    perspective: 1000px;
 }
 .card-content {
     display: flex;
@@ -1239,11 +1242,11 @@ header h1 {
     position: fixed;
     left: 0;
     top: 35%;
-    translate: -200px;
+    transform: translateX(-200px);
     transition: cubic-bezier(0.075, 0.82, 0.165, 1) 0.6s;
 }
 #variations-view-container.shown {
-    translate: 0
+    transform: translateX(0);
 }
 #variations-container {
     text-align: center;
@@ -1280,7 +1283,7 @@ header h1 {
     opacity: 1;
 }
 #variations-view-container {
-    transition: translate cubic-bezier(0.075, 0.82, 0.165, 1) 0.6s, filter 0.25s cubic-bezier(.4,0,.2,1);
+    transition: transform cubic-bezier(0.075, 0.82, 0.165, 1) 0.6s, filter 0.25s cubic-bezier(.4,0,.2,1);
 }
 #variations-view-container.dark {
     filter: brightness(92%)
@@ -1299,8 +1302,8 @@ header h1 {
     background-color: rgb(239, 239, 239);
     justify-content: center;
     flex-wrap: wrap;
-    transition: translate cubic-bezier(.2,.5,0,1) 0.3s, filter 0.25s cubic-bezier(.4,0,.2,1);
-    translate: 0;
+    transition: transform cubic-bezier(.2,.5,0,1) 0.3s, filter 0.25s cubic-bezier(.4,0,.2,1);
+    transform: translateY(0);
     padding: 8px 0 4px;
     box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
 }
@@ -1308,8 +1311,8 @@ header h1 {
     filter: brightness(95%)
 }
 #keyboard-container.hidden {
-    transition: translate cubic-bezier(0.165, 0.84, 0.35, 0.87) 0.2s, filter 0.25s cubic-bezier(.4,0,.2,1);
-    translate: 0 100%;
+    transition: transform cubic-bezier(0.165, 0.84, 0.35, 0.87) 0.2s, filter 0.25s cubic-bezier(.4,0,.2,1);
+    transform: translateY(100%);
 }
 .keyboard-row {
     width: 100%;
@@ -1373,7 +1376,7 @@ header h1 {
     
     width: 90%;
     max-width: 1200px;
-    transform: translateX(-50%);
+    transform: translate(-50%, 100%);
     left: 50%;
     
     /* left: 100px;
@@ -1382,15 +1385,14 @@ header h1 {
     box-shadow: 0 0 5px rgb(0 0 0 / 40%);
     border-radius: 10px 10px 0 0;
     
-    translate: 0 100%;
-    transition: translate 350ms cubic-bezier(0.15, 0.94, 0.41, 0.99) 0ms;
+    transition: transform 350ms cubic-bezier(0.15, 0.94, 0.41, 0.99) 0ms;
     display: flex;
     flex-direction: column;
 }
 
 #new-answer.shown {
-    transition: translate 550ms cubic-bezier(0.15, 0.94, 0.41, 0.99) 0ms;
-    translate: 0;
+    transition: transform 550ms cubic-bezier(0.15, 0.94, 0.41, 0.99) 0ms;
+    transform: translate(-50%, 0);
 }
 
 #answer-header {
